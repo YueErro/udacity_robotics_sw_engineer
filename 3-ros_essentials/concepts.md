@@ -21,6 +21,15 @@
   * [Get topic info](#get-topic-info)
   * [Message information](#message-information)
   * [Echo a topic](#echo-a-topic)
+* [Catkin](#catkin)
+  * [Workspaces](#workspaces)
+  * [Packages](#packages)
+  * [Create a catkin workspace](#create-a-catkin-workspace)
+  * [Add a package](#add-a-package)
+  * [Roslaunch](#roslaunch)
+  * [Rosdep](#rosdep)
+  * [Dive deeper into packages](#dive-deeper-into-packages)
+
 
 ### What is ROS
 ROS or Robot Operating System is a open-source software framework for robotics development.
@@ -28,7 +37,7 @@ ROS or Robot Operating System is a open-source software framework for robotics d
 ### ROS components and features
 ROS porvides a means of communicating with hardware and a way for different processes to communicate with one another via message passing.
 
-ROS features a slick build and package managemnt system called **catkin**, allowing you to develop and deploy software with ease.
+ROS features a slick build and package management system called **catkin**, allowing you to develop and deploy software with ease (See more [here](#catkin)).
 
 To sum up ROS components and features:
 * Open-source
@@ -162,3 +171,98 @@ rosed geometry_msgs Twist.msg
 rostopic echo /turtle1/cmd_vel
 ```
 If we then command the turtle to move from the `turtle_teleop_key` window, we will be able to see the output message in real-time!
+
+### Catkin
+#### Workspaces
+A catkin workspace is a top-level directory where you build, install, and modify catkin packages. The workspace contains all of the packages for your project, along with several other directories for the catkin system to use when building executables and other targets from your source code.
+
+#### Packages
+ROS software is organized and distributed into packages, which are directories that might contain source code for ROS nodes, libraries, datasets, and more. Each package also contains a file with build instructions - the CMakeLists.txt file - and a package.xml file with information about the package. Packages enable ROS users to organize useful functionality in a convenient and reusable format.
+
+#### Create a catkin workspace
+```sh
+# Create a top level catkin workspaces directory and a sub-directory named src
+mkdir -p ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/src
+# Navigate to the src directory
+cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/src
+# Initialize the catkin workspace (don't forget to source your environment)
+souce /opt/ros/kinetic/setup.bash
+catkin_init_workspace
+# Return to top level directory
+cd ..
+# Build the workspace
+catkin_make
+```
+You now have two new directories. The aptly named `build` directory is the build space for C++ packages and, for the most part, you will not interact with it. The `devel` directory does contain something of interest, a file named `setup.bash`. This setup.bash script must be sourced before using the catkin workspace:
+```sh
+source devel/setup.bash
+```
+You may find helpful the catkin workspace conventional directory structure as described in the ROS Enhancement Proposal (REP) 128 by clicking [here](https://www.ros.org/reps/rep-0128.html).
+
+#### Add a package
+```sh
+# Add existing package
+cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/src
+git clone -b first_interaction https://github.com/udacity/RoboND-simple_arm/ simple_arm
+cd .. && catkin_make
+```
+
+#### Roslaunch
+`roslaunch` allows you to do the following:
+* Launch the ROS master and multiple nodes with one simple command
+* Set default parameters on the parameter server
+* Automatically re-spawn processes that have died
+
+To use `roslaunch`, you must first make sure that you have sourced the ROS environment as well as your workspace has been built and sourced:
+```sh
+source /opt/ros/kinetic/setup.bash
+cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws
+catkin_make
+source devel/setup.bash
+roslaunch simple_arm robot_spawn.launch
+```
+#### Rosdep
+ROS packages have two types of dependencies: build dependencies and run dependencies.
+
+The `rosdep` tool will check for a package's missing dependencies, download them, and install them:
+```sh
+source ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/devel/setup.bash
+rosdep check <package_name>
+```
+
+This gives you a list of the system dependencies that are missing, and tells you where to get them.
+
+To have `rosdep` install packages, invoke the following command from the root of the catkin workspace:
+dependencies, download them, and install them:
+```sh
+rosdep install -i <package_name>
+```
+
+#### Dive deeper into pakcages
+The syntax for creating a catkin package is:
+```sh
+# At src directory
+cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/src
+catkin_create_pkg <package_name> [dependency1 dependency2 ...]
+```
+The name of your package is arbitrary but you will run into trouble if you have multiple packages with the same name in your catkin workspace. Try to make it descriptive and unique without being excessively long.
+
+Example:
+```sh
+catkin_create_pkg first_package
+```
+Navigating inside our newly created package reveals that it contains just two files: `CMakeLists.txt` and `package.xml`. This is a minimum working catkin package. It is not very interesting because it doesn't do anything, but it meets all the requirements for a catkin package. One of the main functions of these two files is to describe dependencies and how catkin should interact with them.
+
+ROS packages have a conventional directory structure:
+* scripts (python executables)
+* src (C++ source files)
+* msg (for custom message definitions)
+* srv (for service message definitions)
+* include -> headers/libraries that are needed as dependencies
+* config -> configuration files
+* launch -> provide a more automated way of starting nodes
+
+Other folders may include:
+* urdf (Universal Robot Description Files)
+* meshes (CAD files in .dae (Collada) or .stl (STereoLithography) format)
+* worlds (XML like files that are used for Gazebo simulation environments)
