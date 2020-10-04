@@ -37,7 +37,7 @@
     * [Example: look_away](#example-look_away)
   * [Rosdep](#rosdep)
   * [Dive deeper into packages](#dive-deeper-into-packages)
-
+* [URDF](#urdf)
 
 ### What is ROS
 ROS or Robot Operating System is a open-source software framework for robotics development.
@@ -418,3 +418,101 @@ Other folders may include:
 * urdf (Universal Robot Description Files)
 * meshes (CAD files in .dae (Collada) or .stl (STereoLithography) format)
 * worlds (XML like files that are used for Gazebo simulation environments)
+
+### URDF
+**URDF** or Unified Robot Description Format uses [XML](https://www.w3schools.com/xml/xml_whatis.asp) markup language. We can use a URDF file to define a robot model, its kinodynamic properties, visual elements and even model sensors for the robot. URDF can only describe a robot with rigid links connected by joint in a chain or tree structure. It cannot describe a robot with flexible or parallel links.
+
+Since we use URDF files to describe several robot and environmental properties, the files tend to be long and tedious. This is why we use Xacro (XML Macros) to divide our single URDF file into multiple Xacro files. While the syntax remains the same, we can now divide our robot description into smaller subsystems.
+
+Since URDF (and Xacro) files are basically XML, they use tags to define robot geometry and properties. The most important and commonly used tags with their elements are described below:
+* <robot></robot>
+* <link></link>
+* <joint></joint>
+
+Example of a link:
+```xml
+<!-- Each rigid link in a robot must have this tag associated with it -->
+<link name="link_1">
+  <!-- The inertial properties of the link are described within this tag -->
+  <inertial>
+    <!-- This is the pose of the inertial reference frame, relative to the link reference frame -->
+    <!-- The origin of the inertial reference frame needs to be at the center of gravity -->
+    <origin xyz="0 0 0.4" rpy="0 0 0"/>
+    <!-- The mass of the link is represented by the value attribute of this element -->
+    <mass value="${mass1}"/>
+    <!-- The 3x3 rotational inertia matrix, represented in the inertia frame -->
+    <!-- Because the rotational inertia matrix is symmetric, only 6 above-diagonal elements of this matrix are specified here, using the attributes ixx, ixy, ixz, iyy, iyz, izz -->
+    <inertia ixx="30" ixy="0" ixz="0" iyy="50" iyz="0" izz="50"/>
+  </inertial>
+  <!-- This element specifies the appearance of the object for visualization purposes -->
+  <visual>
+    <!-- The reference frame of the visual element with respect to the reference frame of the link -->
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <!-- The shape of the visual object -->
+    <geometry>
+      <mesh filename="package://kuka_arm/meshes/kr210l150/visual/link_1.dae"/>
+    </geometry>
+    <!-- The material of the visual element -->
+    <material name="">
+      <color rgba="0.75294 0.75294 0.75294 1"/>
+    </material>
+  </visual>
+  <!-- The collision properties of a link -->
+  <collision>
+    <!-- The reference frame of the collision element, relative to the reference frame of the link -->
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <!-- See the geometry description in the above visual element -->
+    <geometry>
+      <mesh filename="package://kuka_arm/meshes/kr210l150/collision/link_1.stl"/>
+    </geometry>
+  </collision>
+</link>
+```
+The `<link>` tag has many more optional elements that can be used to define other properties like color, material, texture, etc.
+
+Example of a joint:
+```xml
+<!-- This tag typically defines a single joint between two links in a robot -->
+<joint name="joint_2" type="revolute">
+  <!-- This is the transform from the parent link to the child link -->
+  <!-- The joint is located at the origin of the child link -->
+  <origin xyz="0.35 0 0.42" rpy="0 0 0"/>
+  <!-- Name of the Parent link for the respective joint -->
+  <parent link="link_1"/>
+  <!-- Name of the child link for the respective joint -->
+  <child link="link_2"/>
+  <!-- Defines the axis of rotation for revolute joints, the axis of translation for prismatic joints, and the surface normal for planar joints -->
+  <!-- Fixed and floating joints do not use the axis field -->
+  <axis xyz="0 1 0"/>
+</joint>
+```
+Other optional elements under the `<joint>` tag. And the type of joints you can define using this tag include:
+| NAME       | DESCRIPTION                                                                            |
+|------------|----------------------------------------------------------------------------------------|
+| Fixed      | Rigid joint with no degrees of freedom. Used to weld links together.                   |
+| Revolute   | A range-limited joint that rotates about an axis.                                      |
+| Prismatic  | A range-limited joint that slides along an axis.                                       |
+| Continuous | Similar to Revolute joint but has no limits. It can rotate continuously about an axis. |
+| Planar     | A 2D Prismatic joint that allows motion in a plane perpendicular to an axis.           |
+| Floating   | A joint with 6 degrees of freedom, generally used for Quadrotors and UAVs.             |
+
+Example of a robot:
+```xml
+<?xml version="1.0"?>
+<!-- This is a top level tag that contains all the other tags related to a given robot -->
+<robot name="two_link_robot">
+  <!--Links-->
+  <link name="link_1">
+    <!-- ... -->
+  </link>
+  <link name="link_2">
+    <!-- ... -->
+  </link>
+  <!-- ... -->
+  <!--Joints-->
+  <joint name="joint_1" type="continuous">
+    <!-- ... -->
+  </joint>
+  <!-- ... -->
+</robot>
+```
