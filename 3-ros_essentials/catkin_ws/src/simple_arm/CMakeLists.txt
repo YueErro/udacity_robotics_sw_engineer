@@ -115,6 +115,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -130,6 +131,9 @@ catkin_package(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/simple_arm_node.cpp)
+## It asks te compiler to include the directories, executable file, link libraties,
+## and dependencies for your C++ code
+add_executable(simple_mover src/simple_mover.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -140,11 +144,15 @@ catkin_package(
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+## This will add all the linked libraries to the compiler.
+add_dependencies(simple_mover simple_arm_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+## Creates the executable simple_mover file.
+target_link_libraries(simple_mover ${catkin_LIBRARIES})
 
 #############
 ## Install ##
