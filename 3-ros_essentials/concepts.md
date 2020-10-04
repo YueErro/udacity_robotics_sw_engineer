@@ -2,16 +2,22 @@
 
 ## Table of contents
 * [What is ROS?](#what-is-ROS)
-* [ROS components and features](#ros-components-and-features)
-* [ROS nodes and topics](#ros-nodes-and-topics)
-  * [Quiz: Nodes and Topics](#quiz-nodes-and-topics)
-* [ROS message](#ros-message)
-  * [Quiz: Messages](#quiz-messages)
-* [ROS services](#ros-services)
-  * [Quiz: Services](#quiz-services)
-* [Compute graph](#compute-graph)
-* [ROS environment](#ros-environment)
-  * [Quiz: Setting up the ROS environment](#quiz-setting-up-the-ros-environment)
+  * [Components and features](#components-and-features)
+  * [Nodes and Topics](#nodes-and-topics)
+    * [Quiz: Nodes and Topics](#quiz-nodes-and-topics)
+  * [Messages](#messages)
+    * [Quiz: Messages](#quiz-messages)
+  * [Publishers](#publishers)
+    * [Quiz: Publisher](#quiz-publisher)
+  * [Subscribers](#subscribers)
+    * [Quiz: Subscriber](#quiz-subscriber)
+  * [Services](#services)
+    * [ServiceServer](#serviceserver)
+    * [ServiceClient](#serviceclient)
+    * [Quiz: Services](#quiz-services)
+  * [Compute graph](#compute-graph)
+  * [Environment](#environment)
+    * [Quiz: Setting up the ROS environment](#quiz-setting-up-the-ros-environment)
 * [Turtlesim](#turtlesim)
   * [Overview](#overview)
     * [Quiz: Commands](#quiz-commands)
@@ -27,6 +33,8 @@
   * [Create a catkin workspace](#create-a-catkin-workspace)
   * [Add a package](#add-a-package)
   * [Roslaunch](#roslaunch)
+    * [Example: arm_mover](#example-arm_mover)
+    * [Example: look_away](#example-look_away)
   * [Rosdep](#rosdep)
   * [Dive deeper into packages](#dive-deeper-into-packages)
 
@@ -34,7 +42,7 @@
 ### What is ROS
 ROS or Robot Operating System is a open-source software framework for robotics development.
 
-### ROS components and features
+#### Components and features
 ROS porvides a means of communicating with hardware and a way for different processes to communicate with one another via message passing.
 
 ROS features a slick build and package management system called **catkin**, allowing you to develop and deploy software with ease (See more [here](#catkin)).
@@ -47,7 +55,7 @@ To sum up ROS components and features:
 * Tools for visualization, simulation and analysis
 * Powerful software libraries
 
-### ROS nodes and topics
+#### Nodes and Topics
 **ROS master** maintains the registry of all the active nodes on a system. Each node can use this registry to discover other nodes and establish lines of communication. In addition, it also host what's called the parameter server.
 
 The **parameter server** is typically used to store parameters and configuration values, that are share among the the running nodes.Nodes can also share data with one another by passing messages over what are called topics.
@@ -56,14 +64,14 @@ The **parameter server** is typically used to store parameters and configuration
 
 A network of nodes connected by topics is called a publish subscribe or pops up  architecture.
 
-#### Quiz: Nodes and Topics
+##### Quiz: Nodes and Topics
 The following statements are true about ROS nodes and topics:
 * Robots may be very different in form and function, but they all perform the same high-level tasks of perception, decision making, and actuation.
 * The parameter server acts as a central repository where nodes on a system can look up parameter values.
 * Nodes pass messages to one another via topics, which you can think of as a pipe connecting two nodes.
 * A single node may simultaneously publish and subscribe to many topics.
 
-### ROS message
+#### Messages
 ROS has a wide variety of predefined message types:
 * Physical quantities:
   * Position
@@ -80,25 +88,110 @@ ROS has a wide variety of predefined message types:
 
 You can also define your own message that can contain any kind of data not just text.
 
-#### Quiz: Messages
+##### Quiz: Messages
 The following statements are true about ROS messages:
 * Messages come in hundreds of different tyes and may contain many different types of data.
 * In addition to default message types, you can define your own custom message types.
 
-### ROS services
-For request response interaction, ROS provides what are called **services**. Like topics, services allow the passing of messages between nodes but using request and response messages.
+#### Publishers
+```sh
+# ROS publisher definition
+ros::Publisher pub1 = n.advertise<message_type>("/topic_name", queue_size);
+# Publish a ROS message
+pub.publish(msg);
+```
+The `pub1` object is a publisher object instantiated from the ros::Publisher class. This object allows you to publish messages by calling the `publish()` function.
 
-#### Quiz: Services
+To communicate with ROS master in C++, you need a **NodeHandle**. The node handle `n` will fully initialize the node.
+
+The `advertise()` function is used to communicate with ROS and inform that you want to publish a message on a given topic name. The `"/topic_name"` indicates which topic the publisher will be publishing to.
+
+The message_type is the type of message being published on "/topic_name". For example, the string message data type in ROS is `std_msgs::String`.
+
+The `queue_size` indicates the number of messages that can be stored in a queue. A publisher can store messages in a queue until the messages can be sent. If the number of messages stored exceeds the size of the queue, the oldest messages are dropped.
+
+##### Quiz: Publisher
+Assume that a queued message is typically picked up in an average time of 1/10th of a second with a standard deviation of 1/20th of a second, and your publisher is publishing at a frequency of 10Hz. Of the options below, which would be the best setting for queue_size?
+* `queue_size=2`
+
+#### Subscribers
+A subscriber enables your node to read messages from a topic, allowing useful data to be streamed to the node.
+```sh
+# ROS subscriber definition
+ros::Subscriber sub1 = n.subscribe("/topic_name", queue_size, callback_function);
+```
+The `sub1` object is a subscriber object instantiated from the ros::Subscriber class. This object allows you to subscribe to messages by calling the `subscribe()` function.
+
+To communicate with the ROS Master in C++, you need a **NodeHandle**. The node handle `n` will initialize the node.
+
+The `"/topic_name"` indicates the topic to which the Subscriber should listen.
+
+The `queue_size` determines the number of messages that can be stored in a queue. If the number of messages published exceeds the size of the queue, the oldest messages are dropped. As an example, if the `queue_size` is set to 100 and the number of messages stored in the queue is equal to 100, we will have to start deleting old messages to make room in the queue for new messages. This means that we are unable to process messages fast enough and we probably need to increase the `queue_size`.
+
+The `callback_function` is the name of the function that will be run each incoming message. Each time a message arrives, it is passed as an argument to `callback_function`. Typically, this function performs a useful action with the incoming data. Note that unlike service handler functions, the `callback_function` is not required to return anything.
+
+##### Quiz: Subscriber
+Which of the following ROS nodes would likely need a Subscriber?
+* A node for an autonomous vehicle that implements pedestrian detection using camera data.
+* A controller node for a lunar rover which implements the actuation of the throttle and brake given target velocities as input
+
+#### Services
+For request response interaction, ROS provides what are called **services**. Like topics, services allow the passing of messages between nodes but using request and response messages. Once the requests have been handled successfully by functions or methods, the node providing the service sends a message back to the requester node.
+
+##### ServiceServer
+```sh
+# ROS ServiceServer definition
+ros::ServiceServer service = n.advertiseService(`service_name`, handler);
+
+```
+In ROS, the service class name `ServiceServer` comes from the file name where the service definition exists. Each service provides a definition in a `.srv` file; this is a text file that provides the proper message type for both requests and responses.
+
+The `advertiseService()` allows you to communicate with ROS through the node handle `n` and inform ROS that you want to create a service.
+
+The `service_name` is the name given to the service. Other nodes will use this name to specify the service to which they are sending requests.
+
+The `handler` is the name of the function or method that handles the incoming service message. This function is called each time the service is called, and the message from the service call is passed to the `handler` function as an argument. The `handler` should return an appropriate service response message.
+
+Services can be called directly from the command line:
+```sh
+rosservice call service_name "request"
+```
+After calling the service, you will wait for an answer.
+
+##### ServiceClient
+ROS client provides the interface for sending messages to the service:
+```sh
+# ROS ServiceClient definition
+ros::ServiceClient client = n.serviceClient<package_name::service_file_name>("service_name");
+# Request a service
+client.call(srv);
+```
+The `client` object is instantiated from the ros::ServiceClient class. This object allows you to request services by calling the `client.call()` function.
+
+To communicate with the ROS Master in C++, you need a **NodeHandle**. The node handle `n` will initialize the node.
+
+The `package_name::service_file_name` indicates the name of the service file located in the `srv` directory of the package.
+
+The `service_name` argument indicates the name of the service which is defined in the service server node.
+
+#####
+
+##### Quiz: Services
 The following statements are true about ROS services:
 * Services are similar to topics in that they faciliate the passing of messages between nodes.
 * Services use a request-response message passing scheme, rather than the pub-sub method used with topics.
 * A request message on a service might actually trigger a new sensor measurement, like a new camera image, with settings like exposure time specified in the message.
 
-### Compute graph
+Which of the following ROS nodes might best be implemented using a service?
+* A node for a lunar rover that shuts down a robotics arm by folding the arm and killing all related processes.
+* A node that sets a given parameter on request. For example, a node in turtlesim that sets the pen color in the turtlesim window.
+* A node which executes movement for a robotics arm, checking that the arm joints are within specified bounds.
+
+#### Compute graph
 The **compute graph** is useful for understanding what nodes exist and how they communicate with one another. ROS provides a tool called *RQT* graph for showing the compute graph of a system.
 
-### ROS environment
-#### Quiz: Setting up the ROS environment
+#### Environment
+##### Quiz: Setting up the ROS environment
 * `source` command: Executes the bash script within the existing environment.
 * `./` command: Environment used by the executed command is destroyed wen script is done running.
 
@@ -221,6 +314,65 @@ catkin_make
 source devel/setup.bash
 roslaunch simple_arm robot_spawn.launch
 ```
+
+##### Example: arm_mover
+Make sure that the catkin_ws is compiled.
+```sh
+# Terminal 1: launch the robot arm
+source cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/devel/setup.bash
+roslaunch simple_arm robot_spawn.launch
+```
+```sh
+# Terminal 2: display the camera image stream
+source cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/devel/setup.bash
+rqt_image_view /rgb_camera/image_raw
+```
+```sh
+# Terminal 3: Echo /rosout topic
+source cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/devel/setup.bash
+rostopic echo /rosout
+```
+```sh
+# Terminal 4: Verify that the node and service have indeed launched
+source cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/devel/setup.bash
+# /arm_mover node
+rosnode list
+# /arm_mover/safe_move service
+rosservice list
+# Mode the robot arm to move the camera and see something more than a gray image
+rosservice call /arm_mover/safe_move "joint_1: 1.57
+joint_2: 1.57"
+# You will see the following message in Terminal 3:
+# msg: "j2 is out of bounds, valid range (0.00,1.00), clamping to: 1.00"
+# In order to increase joint 2's maximum angle:
+rosparam set /arm_mover/max_joint_2_angle 1.57
+# And move again
+rosservice call /arm_mover/safe_move "joint_1: 1.57
+joint_2: 1.57"
+```
+
+##### Example: look_away
+Make sure that the catkin_ws is compiled.
+```sh
+# Terminal 1: launch the robot arm with the look_away node
+source cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/devel/setup.bash
+roslaunch simple_arm robot_spawn_look_away.launch
+```
+```sh
+# Terminal 2: display the camera image stream
+source cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/devel/setup.bash
+rqt_image_view /rgb_camera/image_raw
+```
+```sh
+# Terminal 3: Move the robot arm directly up towards the sky
+source cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/devel/setup.bash
+rosservice call /arm_mover/safe_move "joint_1: 0
+joint_2: 0"
+```
+Quiz:
+* The arm moves to point towards the sky
+* The arm points back to toward the blocks
+
 #### Rosdep
 ROS packages have two types of dependencies: build dependencies and run dependencies.
 
