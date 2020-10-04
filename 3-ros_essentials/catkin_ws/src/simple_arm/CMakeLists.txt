@@ -137,6 +137,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## and dependencies for your C++ code
 add_executable(simple_mover src/simple_mover.cpp)
 add_executable(arm_mover src/arm_mover.cpp)
+add_executable(look_away src/look_away.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -150,6 +151,7 @@ add_executable(arm_mover src/arm_mover.cpp)
 ## This will add all the linked libraries to the compiler.
 add_dependencies(simple_mover simple_arm_generate_messages_cpp)
 add_dependencies(arm_mover simple_arm_generate_messages_cpp)
+add_dependencies(look_away simple_arm_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -158,6 +160,7 @@ add_dependencies(arm_mover simple_arm_generate_messages_cpp)
 ## Creates the executable simple_mover file.
 target_link_libraries(simple_mover ${catkin_LIBRARIES})
 target_link_libraries(arm_mover ${catkin_LIBRARIES})
+target_link_libraries(look_away ${catkin_LIBRARIES})
 
 #############
 ## Install ##
