@@ -88,4 +88,4 @@ There are many environment variables that Gazebo uses, primarily to locate files
 `GAZEBO_MODEL_PATH`: List of directories where Gazebo looks to populate a model file.
 
 #### Plugins
-To interact with a world, model, or sensor in Gazebo, you can write plugins. See more [here]()
+To interact with a world, model, or sensor in Gazebo, you can write plugins.
