@@ -41,6 +41,7 @@
 * [Sensors](#sensors)
   * [Camera](#camera)
   * [Lidar](#lidar)
+* [RViz](#rviz)
 
 ### What is ROS
 ROS or Robot Operating System is a open-source software framework for robotics development.
@@ -526,3 +527,19 @@ Cameras are one of the most common sensors in Robotics. They capture information
 
 #### Lidar
 Lidar stands for Light Detection and Ranging. It uses arrays of lasers to sense “point cloud” models of the environment. By measuring thousands of millions of times per second, lidar builds an accurate model of the world. However, the resolution is not nearly as high as that of a camera.
+
+### RViz
+RViz stands for ROS Visualization. RViz is our one-stop tool to visualize all three core aspects of a robot: perception, decision-making, and actuation.
+
+While Gazebo is a physics simulator, RViz can visualize any type of sensor data being published over a ROS topic: camera images, point clouds, ultrasonic measurements, lidar data, inertial measurements, and more. This data can be a live stream directly from the sensor or pre-recorded data stored as a **bagfile**.
+
+You can also visualize live joint angle values from a robot and hence construct a real-time 3D representation of any robot.
+
+```sh
+# Make sure you have a roscore to run rviz
+# Terminal 1:
+roscore
+# Terminal 2:
+rosrun rviz rviz
+```
+RViz by default starts with two fixed property fields that cannot be removed: **Global Options** and **Global Status**. One governs simple global settings, while the other detects and displays useful status notifications.
