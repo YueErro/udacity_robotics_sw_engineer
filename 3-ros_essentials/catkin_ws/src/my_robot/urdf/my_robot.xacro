@@ -54,6 +54,9 @@
       </geometry>
     </visual>
   </link>
+  <gazebo reference="chassis">
+    <material>Gazebo/Blue</material>
+  </gazebo>
   <link name='left_wheel'>
     <pose>0 0 0 0 0 0</pose>
     <inertial>
@@ -77,6 +80,9 @@
       </geometry>
     </collision>
   </link>
+  <gazebo reference="left_wheel">
+    <material>Gazebo/Green</material>
+  </gazebo>
   <link name='right_wheel'>
     <pose>0 0 0 0 0 0</pose>
     <inertial>
@@ -100,6 +106,9 @@
       </geometry>
     </collision>
   </link>
+  <gazebo reference="right_wheel">
+    <material>Gazebo/Green</material>
+  </gazebo>
   <joint type="continuous" name="left_wheel_hinge">
     <origin xyz="0 0.15 0" rpy="0 0 0"/>
     <child link="left_wheel"/>
@@ -136,6 +145,9 @@
       </geometry>
     </collision>
   </link>
+  <gazebo reference="camera">
+    <material>Gazebo/Red</material>
+  </gazebo>
   <joint type="fixed" name="camera_joint">
     <origin xyz="0.2 0 0" rpy="0 0 0"/>
     <child link="camera"/>
