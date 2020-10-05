@@ -38,6 +38,9 @@
   * [Rosdep](#rosdep)
   * [Dive deeper into packages](#dive-deeper-into-packages)
 * [URDF](#urdf)
+* [Sensors](#sensors)
+  * [Camera](#camera)
+  * [Lidar](#lidar)
 
 ### What is ROS
 ROS or Robot Operating System is a open-source software framework for robotics development.
@@ -516,3 +519,10 @@ Example of a robot:
   <!-- ... -->
 </robot>
 ```
+
+### Sensors
+#### Camera
+Cameras are one of the most common sensors in Robotics. They capture information that is easily interpreted by humans at a high resolution compared to other sensors. Every image captures millions of pixels. To extract depth information from camera images, people have started using stereo cameras. These work like your eyes do and are able to estimate distances to objects.
+
+#### Lidar
+Lidar stands for Light Detection and Ranging. It uses arrays of lasers to sense “point cloud” models of the environment. By measuring thousands of millions of times per second, lidar builds an accurate model of the world. However, the resolution is not nearly as high as that of a camera.
