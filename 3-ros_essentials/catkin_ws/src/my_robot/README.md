@@ -1,4 +1,4 @@
-# Go Chase It!
+# my_robot
 
 Build, source and launch the gazebo world:
 ```sh
