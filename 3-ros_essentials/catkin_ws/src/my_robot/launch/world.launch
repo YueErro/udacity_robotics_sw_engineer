@@ -2,6 +2,8 @@
 <launch>
   <!-- World File -->
   <arg name="world_file" default="$(find my_robot)/worlds/UdacityOffice.world"/>
+  <!-- Do you want to launch RViz? -->
+  <arg name="rviz" default="true"/>
   <!-- Launch Gazebo World -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="use_sim_time" value="true"/>
@@ -20,6 +22,9 @@
   <include file="$(find my_robot)/launch/robot_description.launch"/>
   <!-- Spawn My Robot -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -param robot_description -model my_robot -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/>
-  <!--launch rviz-->
-  <node name="rviz" pkg="rviz" type="rviz" respawn="false"/>
+
+  <group if="$(arg rviz)">
+    <!--launch rviz-->
+    <node name="rviz" pkg="rviz" type="rviz" respawn="false"/>
+  </group>
 </launch>
