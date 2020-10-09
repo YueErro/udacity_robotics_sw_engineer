@@ -13,3 +13,5 @@ Run the gazebo world:
 export GAZEBO_PLUGIN_PATH=${GAZEBO_PLUGIN_PATH}:~/udacity_robotics_sw_engineer/2-gazebo_world/myrobot/build
 gazebo ~/udacity_robotics_sw_engineer/2-gazebo_world/myrobot/world/myworld --verbose
 ```
+
+![](images/myworld.png)

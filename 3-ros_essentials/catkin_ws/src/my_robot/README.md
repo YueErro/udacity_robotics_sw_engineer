@@ -5,5 +5,7 @@ Build, source and launch the gazebo world:
 cd ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/src
 catkin_make
 source devel/setup.bash
-roslaunch my_robot world.launch
+roslaunch my_robot world.launch rviz:=false
 ```
+
+![](images/my_robot.png)

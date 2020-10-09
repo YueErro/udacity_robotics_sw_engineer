@@ -8,6 +8,8 @@ source devel/setup.bash
 roslaunch my_robot world.launch rviz:=false
 ```
 
+![](images/my_robot.png)
+
 In a new terminal run the `drive_bot` node:
 ```sh
 source ~/udacity_robotics_sw_engineer/3-ros_essentials/catkin_ws/devel/setup.bash
