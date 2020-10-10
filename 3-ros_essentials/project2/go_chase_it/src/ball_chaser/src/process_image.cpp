@@ -34,7 +34,6 @@ void process_image_callback(const sensor_msgs::Image img)
   std::vector<int> ball_pixels = { 0, 0, 0 };
 
   // Loop through each pixel in the image and check if there's a bright white one
-  // Iterate threes due to three possible locations
   for (unsigned int i = 0; i < img.height * img.step; i++)
   {
     if (img.data[i] == white_pixel)
@@ -81,7 +80,7 @@ void process_image_callback(const sensor_msgs::Image img)
     else
     {
       ROS_INFO_STREAM("Most part of the ball is in the middle");
-      drive_robot(0.1f, 0.0f);
+      drive_robot(0.1f / closeness_indicator, 0.0f);
     }
   }
   // Request a stop when there's no white ball seen by the camera
