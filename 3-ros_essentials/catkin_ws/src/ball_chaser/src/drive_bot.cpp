@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 // Include the ball_chaser "DriveToTarget" header file
-#include <ball_chaser/DriveToTarget.h>
+#include "ball_chaser/DriveToTarget.h"
 
 // ROS::Publisher motor commands;
 ros::Publisher motor_command_publisher;
