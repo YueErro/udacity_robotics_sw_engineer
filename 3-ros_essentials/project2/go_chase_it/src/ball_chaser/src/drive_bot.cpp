@@ -15,7 +15,7 @@ ros::Publisher motor_command_publisher;
 bool handle_drive_request(ball_chaser::DriveToTarget::Request& req,
                           ball_chaser::DriveToTarget::Response& res)
 {
-  ROS_INFO_STREAM("DriveToTargetRequest received - linear_x: "
+  ROS_DEBUG_STREAM("DriveToTargetRequest received - linear_x: "
                   << req.linear_x << ", angular_z: " << req.angular_z);
   geometry_msgs::Twist motor_command;
   // Set wheel requested velocities
@@ -27,7 +27,7 @@ bool handle_drive_request(ball_chaser::DriveToTarget::Request& req,
   res.msg_feedback = "Linear and angular velocities set - linear_x: " +
                      std::to_string(motor_command.linear.x) +
                      " , angular_z: " + std::to_string(motor_command.angular.x);
-  ROS_INFO_STREAM(res.msg_feedback);
+  ROS_DEBUG_STREAM(res.msg_feedback);
   return true;
 }
 

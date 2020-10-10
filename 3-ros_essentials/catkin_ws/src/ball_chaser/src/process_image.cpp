@@ -17,7 +17,7 @@ void drive_robot(float lin_x, float ang_z)
   dtt_srv.request.linear_x = lin_x;
   dtt_srv.request.angular_z = ang_z;
 
-  ROS_INFO_STREAM("Commanding the robot linear: " << lin_x << ", angular: " << ang_z);
+  ROS_DEBUG_STREAM("Commanding the robot linear: " << lin_x << ", angular: " << ang_z);
 
   if (!client.call(dtt_srv))
   {
@@ -30,62 +30,64 @@ void process_image_callback(const sensor_msgs::Image img)
 {
   int white_pixel = 255;
   unsigned int ball_pos;
-  // {left, right, middle}
-  std::vector<int> ball_pixels = { 0, 0, 0 };
+  int left = 0;
+  int right = 0;
+  int middle = 0;
 
   // Loop through each pixel in the image and check if there's a bright white one
-  for (unsigned int i = 0; i < img.height * img.step; i++)
+  // Iterate by threes due to RGB concatenation
+  for (unsigned int i = 0; i < img.height * img.step; i += 3)
   {
-    if (img.data[i] == white_pixel)
+    // [R, G, B]
+    if (img.data[i] == white_pixel && img.data[i + 1] == white_pixel && img.data[i + 3] == white_pixel)
     {
-      ROS_INFO_STREAM("The ball is in the image");
+      ROS_DEBUG_STREAM("The ball is in the image");
       ball_pos = i % img.step;
       // Then, identify if this pixel falls in the left, mid, or right side of the image
       if (ball_pos < img.step / 3)
       {
-        ROS_INFO_STREAM("Ball pixel on the left hand side");
-        ball_pixels[0] += 1;
+        ROS_DEBUG_STREAM("Ball pixel on the left hand side");
+        left += 1;
       }
-      else if (ball_pos > img.step / 3)
+      else if (ball_pos > img.step * 2 / 3)
       {
-        ROS_INFO_STREAM("Ball pixel on the right hand side");
-        ball_pixels[1] += 1;
+        ROS_DEBUG_STREAM("Ball pixel on the right hand side");
+        right += 1;
       }
       else
       {
-        ROS_INFO_STREAM("Ball pixel in the middle");
-        ball_pixels[2] += 1;
+        ROS_DEBUG_STREAM("Ball pixel in the middle");
+        middle += 1;
       }
-      break;
     }
   }
   // Depending on the white ball position, call the drive_bot function and pass
   // velocities
   // to it
-  if ((ball_pixels[0] | ball_pixels[1] | ball_pixels[2]) != 0)
+  if ((left | right | middle) != 0)
   {
-    int location =
-        std::max_element(ball_pixels.begin(), ball_pixels.end()) - ball_pixels.begin();
-    float closeness_indicator = *std::max_element(ball_pixels.begin(), ball_pixels.end());
-    if (location == 0)
+    if (left > right && left > middle)
     {
-      ROS_INFO_STREAM("Most part of the ball is on the left hand side");
-      drive_robot(0.1f / closeness_indicator, 0.1f * closeness_indicator);
+      ROS_DEBUG_STREAM("Most part of the ball is on the left hand side");
+//      drive_robot(0.01f / left, 1.0f * left);
+      drive_robot(0.2f, 0.4f);
     }
-    else if (location == 1)
+    else if (right > left && right > middle)
     {
-      ROS_INFO_STREAM("Most part of the ball is on the right hand side");
-      drive_robot(0.1f / closeness_indicator, -0.1f * closeness_indicator);
+      ROS_DEBUG_STREAM("Most part of the ball is on the right hand side");
+//      drive_robot(0.01f / right, -1.0f * right);
+      drive_robot(0.2f, -0.4f);
     }
     else
     {
-      ROS_INFO_STREAM("Most part of the ball is in the middle");
-      drive_robot(0.1f / closeness_indicator, 0.0f);
+      ROS_DEBUG_STREAM("Most part of the ball is in the middle");
+      drive_robot(0.2f, 0.0f);
     }
   }
   // Request a stop when there's no white ball seen by the camera
   else
   {
+    ROS_DEBUG_STREAM("Stop robot, it doesn't see the white ball");
     drive_robot(0.0f, 0.0f);
   }
 }
