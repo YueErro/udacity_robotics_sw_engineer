@@ -8,9 +8,10 @@
     * [Multivariate Gaussians](#multivariate-gaussians)
   * [Multidimensional KF](#multidimensional-kf)
   * [Multidimensional EKF](#multidimensional-ekf)
-  * [Monte Carlo Localization](#monte-carlo-localization)
 * [Localization problems](#localization-problems)
 * [Quiz: Localization](#quiz-localization)
+* [Sensor fusion](#sensor-fusion)
+* [Turtlebot](#turtlebot)
 
 ### What is localization?
 Localization is the challenge of determining you robot's pose in a mapped environment.
@@ -537,8 +538,6 @@ The rows correspond to the dimensions of the function, f, and the columns relate
 
 The Jacobian is a generalization of the 1-dimensional case. In a 1-dimensional case, the Jacobian would have df/dx as its only term.
 
-#### Monte Carlo Localization
-
 ### Localization problems
 * Position Tracking or Local Localization: it is the easiest localization problem. The robot knows its initial pose and it has to estimate the its pose as it moves out on the environment.
 * Global Localization: it is more complicated localization. The robot's initial pose is unknown and it must determine its pose relative to the ground truth map.
@@ -549,3 +548,17 @@ The following statements are correct:
 * In global localization, the robot's initial pose is unknown.
 * The position tracking problem is easier to solve than the global localization one.
 * In the kidnapped robot problem, the robot is teleported to a different location.
+
+### Sensor fusion
+Each sensor of the robot has limitations which manifest as noise and error. The three most common types of mobile robot sensors are:
+* Inertial measurement unit (IMU): It can measure linear acceleration and the angular velocity.
+* Rotary encoders: They are attached to the robot's actuated wheels and  measures the velocity and position of the wheels.
+* Vision sensors: It is usually and RGB-D camera that captures images and sense  the depth towards the obstacle which can be translated to a position.
+
+The IMU and encoders are prone to drift, whereas the camera might not always operate as expected. That's why a sensor fusion of at least two of them is usually required.
+
+### Turtlebot
+The turtlebot is one of the famous robots used by roboticists around the world to perform localization, mapping and path planning. There are three versions:
+1. Introduced in 2010 with an iRobot Case base.
+2. Introduced in 2012 with the Kobuki base.
+3. Introduced in 2017
