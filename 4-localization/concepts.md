@@ -264,7 +264,7 @@ A Gaussian is characterized by two parameters - its mean (μ) and its variance (
 
 Gaussian distributions are frequently abbreviated as N(x: μ, σ²), and will be referred to in this way throughout the coming lessons.
 
-The formula for the Gaussian distribution is printed below. Notice that the formula contains an exponential of a quadratic function. The quadratic compares the value of x to μ, and in the case that x=μ, the exponential is equal to 1 (e<sup>0</sup> = 1). You’ll note here, that the constant in front of the exponential is a necessary normalizing factor.
+The formula for the Gaussian distribution is printed below. Notice that the formula contains an exponential of a quadratic function. The quadratic compares the value of x to μ, and in the case that x=μ, the exponential is equal to 1 (e<sup>0</sup> = 1). You'll note here, that the constant in front of the exponential is a necessary normalizing factor.
 
 ![](images/gaussian_exponential_formula.png)
 
@@ -331,7 +331,7 @@ In multidimensional states, there may exist hidden state variables, once that yo
 
 **State Transition**
 
-The formula below is the state transition function that advances the state from time _t_ to time _t + 1_. It is just the relationship between the robot’s position, xx, and velocity, ẋ. Here, we will assume that the robot’s velocity is not changing.
+The formula below is the state transition function that advances the state from time _t_ to time _t + 1_. It is just the relationship between the robot's position, xx, and velocity, ẋ. Here, we will assume that the robot's velocity is not changing.
 
 ![](images/state_transition.png)
 
@@ -354,13 +354,13 @@ If you multiply the state, _x_, by _F_, then the covariance will be affected by 
 
 ![](images/state_transition_covariance.png)
 
-However, your intuition may suggest that it should be affected by more than just the state transition function. For instance, additional uncertainty may arise from the prediction itself. If so, you’re correct!
+However, your intuition may suggest that it should be affected by more than just the state transition function. For instance, additional uncertainty may arise from the prediction itself. If so, you're correct!
 
 To calculate the posterior covariance, the prior covariance is multiplied by the state transition function squared, and _Q_ added as an increase of uncertainty due to process noise. _Q_ can account for a robot slowing down unexpectedly, or being drawn off course by an external influence.
 
 ![](images/state_transition_posterior_covariance.png)
 
-Now we’ve updated the mean and the covariance as part of the state prediction.
+Now we've updated the mean and the covariance as part of the state prediction.
 
 **Quiz 1**
 
@@ -410,7 +410,7 @@ Next, it's time to consider the measurement noise, denoted _R_. This formula map
 Next, we calculate the Kalman Gain, K. As you will see in the next equation, the Kalman Gain determines how much weight should be placed on the state prediction, and how much on the measurement update. It is an averaging factor that changes depending on the uncertainty of the state prediction and measurement update.
 
 ![](images/kalman_gain.png)
-The last step in the Kalman Filter is to update the new state’s covariance using the Kalman Gain.
+The last step in the Kalman Filter is to update the new state's covariance using the Kalman Gain.
 
 ![](images/kalman_gain_update.png)
 
@@ -516,9 +516,9 @@ int main()
 
 #### Multidimensional EKF
 
-Now you’ve seen the fundamentals behind the Extended Kalman Filter. The mechanics are not too different from the Kalman Filter, with the exception of needing to linearize a nonlinear motion or measurement function to be able to update the variance.
+Now you've seen the fundamentals behind the Extended Kalman Filter. The mechanics are not too different from the Kalman Filter, with the exception of needing to linearize a nonlinear motion or measurement function to be able to update the variance.
 
-You’ve seen how this can be done for a state prediction or measurement function that is of one-dimension, but now it’s time to explore how to linearize functions with multiple dimensions. To do this, we will be using multi-dimensional Taylor series.
+You've seen how this can be done for a state prediction or measurement function that is of one-dimension, but now it's time to explore how to linearize functions with multiple dimensions. To do this, we will be using multi-dimensional Taylor series.
 
 **Linearization in multiple dimensions**
 
@@ -546,13 +546,13 @@ The Jacobian is a generalization of the 1-dimensional case. In a 1-dimensional c
 Monte Carlo Localization or MCL uses particles to localize your robot. Each of the particles has a position (x, y), orientation, weight (robot's actual pose and the particle's predicted pose, the bigger the more accurate it is) and represent a guess of where your robot might be located. These particles are re-sampled each time the robot moves and sense its environment. MCL is limited only to local and global localization problem. So, you lose sight of your robot if someone hacks into it.
 
 #### Bayes filtering
-The powerful Monte Carlo localization algorithm estimates the posterior distribution of a robot’s position and orientation based on sensory information. This process is known as a recursive `Bayes filter`.
+The powerful Monte Carlo localization algorithm estimates the posterior distribution of a robot's position and orientation based on sensory information. This process is known as a recursive `Bayes filter`.
 
 Using a Bayes filtering approach, roboticists can estimate the **state** of a **dynamical system** from sensor **measurements**.
 
-In mobile robot localization, it’s important to be acquainted with the following definitions:
+In mobile robot localization, it's important to be acquainted with the following definitions:
 * **Dynamical system**: The mobile robot and its environment
-* **State**: The robot’s pose, including its position and orientation.
+* **State**: The robot's pose, including its position and orientation.
 * **Measurements**: Perception data(e.g. laser scanners) and odometry data(e.g. rotary encoders)
 
 The goal of Bayes filtering is to estimate a probability density over the state space conditioned on the measurements. The probability density, or also known as **posterior** is called the **belief** and is denoted as:
@@ -585,7 +585,7 @@ Given:
 * **P(DOOR|¬POS)**: The probability of the robot seeing the door given that it's not in the actual position
 
 Compute:
-* **P(POS|DOOR)**: The belief or the probability of the robot being at the actual position given that it’s seeing the door.
+* **P(POS|DOOR)**: The belief or the probability of the robot being at the actual position given that it's seeing the door.
 ```cpp
 #include <iostream>
 using namespace std;
@@ -625,7 +625,7 @@ int main()
   4. Resampling
   5. New Belief
 
-* Does the orientation of particles play a role in estimating the robot’s pose?
+* Does the orientation of particles play a role in estimating the robot's pose?
   - Yes, definitely!
 
 ### MCL vs EKF

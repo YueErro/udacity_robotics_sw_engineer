@@ -70,7 +70,7 @@ gazebo <sdf_file>.world
 ```
 
 #### Model files
-To include a **model** file of a robot or any other model inside your world file, you can add the following code to the **world’s SDF** file:
+To include a **model** file of a robot or any other model inside your world file, you can add the following code to the **world's SDF** file:
 
 ```xml
 <include>

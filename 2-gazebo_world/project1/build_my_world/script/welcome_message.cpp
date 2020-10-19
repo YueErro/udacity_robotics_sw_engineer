@@ -7,7 +7,7 @@ class WorldPluginMyRobot : public WorldPlugin
 public:
   WorldPluginMyRobot() : WorldPlugin()
   {
-    printf("Welcome to Yue’s World!\n");
+    printf("Welcome to Yue's World!\n");
   }
 
   void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf)
