@@ -8,6 +8,10 @@
     * [Multivariate Gaussians](#multivariate-gaussians)
   * [Multidimensional KF](#multidimensional-kf)
   * [Multidimensional EKF](#multidimensional-ekf)
+  * [Monte Carlo Localization](#monte-carlo-localization)
+    * [Bayes filtering](#bayes-filtering)
+    * [Quizzes: MCL](#quiz-mcl)
+  * [MCL vs EKF](#MCL-vs-EKF)
 * [Localization problems](#localization-problems)
 * [Quiz: Localization](#quiz-localization)
 * [Sensor fusion](#sensor-fusion)
@@ -537,6 +541,122 @@ In it's expanded form, the Jacobian is a matrix of partial derivatives. It tells
 The rows correspond to the dimensions of the function, f, and the columns relate to the dimensions (state variables) of x. The first element of the matrix is the first dimension of the function derived with respect to the first dimension of x.
 
 The Jacobian is a generalization of the 1-dimensional case. In a 1-dimensional case, the Jacobian would have df/dx as its only term.
+
+### Monte Carlo Localization
+Monte Carlo Localization or MCL uses particles to localize your robot. Each of the particles has a position (x, y), orientation, weight (robot's actual pose and the particle's predicted pose, the bigger the more accurate it is) and represent a guess of where your robot might be located. These particles are re-sampled each time the robot moves and sense its environment. MCL is limited only to local and global localization problem. So, you lose sight of your robot if someone hacks into it.
+
+#### Bayes filtering
+The powerful Monte Carlo localization algorithm estimates the posterior distribution of a robot’s position and orientation based on sensory information. This process is known as a recursive `Bayes filter`.
+
+Using a Bayes filtering approach, roboticists can estimate the **state** of a **dynamical system** from sensor **measurements**.
+
+In mobile robot localization, it’s important to be acquainted with the following definitions:
+* **Dynamical system**: The mobile robot and its environment
+* **State**: The robot’s pose, including its position and orientation.
+* **Measurements**: Perception data(e.g. laser scanners) and odometry data(e.g. rotary encoders)
+
+The goal of Bayes filtering is to estimate a probability density over the state space conditioned on the measurements. The probability density, or also known as **posterior** is called the **belief** and is denoted as:
+
+![](images/bayes.png)
+
+Where,
+* X<sub>t</sub>: `State` at time t
+* Z<sub>1...t</sub>: `Measurements` from time 1 up to time t
+
+**Probability**
+
+Given a set of probabilities, **P(A|B)** is calculated as follows:
+
+![](images/bayes_probability.png)
+
+**Quiz**
+
+![](images/bayes_quiz.png)
+
+This robot is located inside of a 1D hallway which has three doors. The robot doesn't know where it is located in this hallway, but it has sensors onboard that can tell it, with some amount of precision, whether it is standing in front of a door, or in front of a wall. The robot also has the ability to move around - with some precision provided by its odometry data. Neither the sensors nor the movement is perfectly accurate, but the robot aims to locate itself in this hallway.
+
+The mobile robot is now moving in the 1D hallway and collecting odometry and perception data. With the odometry data, the robot is keeping track of its current position. Whereas, with the perception data, the robot is identifying the presence of doors.
+
+In this quiz, we are aiming to calculate the state of the robot, given its measurements. This is known by the belief: **P(Xt|Z)!**
+
+Given:
+* **P(POS)**: The probability of the robot being at the actual position
+* **P(DOOR|POS)**: The probability of the robot seeing the door given that it's in the actual position
+* **P(DOOR|¬POS)**: The probability of the robot seeing the door given that it's not in the actual position
+
+Compute:
+* **P(POS|DOOR)**: The belief or the probability of the robot being at the actual position given that it’s seeing the door.
+```cpp
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	//Given P(POS), P(DOOR|POS) and P(DOOR|¬POS)
+	double a = 0.0002 ; //P(POS) = 0.002
+	double b = 0.6    ; //P(DOOR|POS) = 0.6
+	double c = 0.05   ; //P(DOOR|¬POS) = 0.05
+	//Compute P(¬POS) and P(POS|DOOR)
+	double d = 1-a;                  //P(¬POS)
+	double e = (b*a)/((a*b)+(d*c));  //P(POS|DOOR)
+	//Print Result
+	cout << "P(POS|DOOR)= " << e << endl;
+
+	return 0;
+}
+```
+
+#### Quizzes: MCL
+* Which localization problems can MCL solve?
+  - Local
+  - Global
+
+* How is MCL different from other localization algorithms?
+  - MCL uses particles to localize the robot pose
+  - MCL can approximate almost any state space distribution
+
+* Choose the correct answer regarding MCL
+  - None of the above
+
+* Order of the MCL algorithm
+  1. Previous Belief
+  2. Motion Update
+  3. Measurement Update
+  4. Resampling
+  5. New Belief
+
+* Does the orientation of particles play a role in estimating the robot’s pose?
+  - Yes, definitely!
+
+### MCL vs EKF
+
+![](images/MCLvsEKF.png)
+
+MCL:
+
+![](images/MCL.png)
+
+At time:
+* t=1, Particles are drawn randomly and uniformly over the entire pose space.
+* t=2, Measurement is updated and an importance weight is assigned to each particle.
+* t=3, Motion is updated and a new particle set with uniform weights and high number of particles around the three most likely places is obtained in resampling.
+* t=4, Measurement assigns non-uniform weight to the particle set.
+* t=5, Motion is updated and a new resampling step is about to start.
+
+EKF:
+
+![](images/EKF.png)
+
+At time:
+* t=1, Initial belief represented by a Gaussian distribution around the first door.
+* t=2, Motion is updated and the new belief is represented by a shifted Gaussian of increased weight.
+* t=3, Measurement is updated and the robot is more certain of its location. The new posterior is represented by a Gaussian with a small variance.
+* t=4, Motion is updated and the uncertainty increases.
+
+**Quiz**
+Select concepts that are common to both the MCL and EKF algorithms:
+* Gaussian distribution
+* Motion and measurement stages
 
 ### Localization problems
 * Position Tracking or Local Localization: it is the easiest localization problem. The robot knows its initial pose and it has to estimate the its pose as it moves out on the environment.
