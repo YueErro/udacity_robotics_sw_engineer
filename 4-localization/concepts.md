@@ -628,6 +628,172 @@ int main()
 * Does the orientation of particles play a role in estimating the robot's pose?
   - Yes, definitely!
 
+* Programming quiz: Fist interaction
+
+  Now that you’ve reviewed the Robot class, it’s time to **interact** with it. In this quiz, you will be asked to fill in the missing **values** and **statements** to simulate robot motion.
+  ```cpp
+  int main()
+  {
+    // Instantiating a robot object from the Robot class
+    Robot myrobot;
+
+    // TODO: Set robot new position to x=10.0, y=10.0 and orientation=0
+    // Fill in the position and orientation values in myrobot.set() function
+    myrobot.set(10.0, 10.0, 0.0);
+
+    // Printing out the new robot position and orientation
+    cout << myrobot.show_pose() << endl;
+
+    // TODO: Rotate the robot by PI/2.0 and then move him forward by 10.0
+    // Use M_PI for the pi value
+    myrobot.move(M_PI/2.0, 10.0);
+
+    // TODO: Print out the new robot position and orientation
+    std::cout << myrobot.show_pose() << std::endl;
+
+    // Printing the distance from the robot toward the eight landmarks
+    cout << myrobot.read_sensors() << endl;
+
+    return 0;
+  }
+  ```
+
+* Programming quiz: Motion and Sensing
+
+  In the previous lesson, you’ve learned how to interact with the Robot class. Now, you’ll be asked to **instantiate** a robot object, simulate **motion** update and **sensor** update similar to what you’ve learned in the first quiz.
+  ```cpp
+  int main()
+  {
+    // TODO: Instantiate a robot object from the Robot class
+    Robot my_robot;
+
+    // TODO: Set robot new position to x=30.0, y=50.0 and orientation=PI/2
+    my_robot.set(30.0, 50.0, M_PI/2.0);
+
+    // TODO: Turn clockwise by PI/2 and move by 15 meters
+    my_robot.move(-M_PI/2.0, 15.0);
+
+    // TODO: Print the distance from the robot toward the eight landmarks
+    std::cout << my_robot.read_sensors() << std::endl;
+
+    // TODO: Turn clockwise by PI/2 and move by 10 meters
+    my_robot.move(-M_PI/2.0, 10.0);
+
+    // TODO: Print the distance from the robot toward the eight landmarks
+    std::cout << my_robot.read_sensors() << std::endl;
+
+    return 0;
+  }
+  ```
+
+* Programming quiz: Noise
+
+  You’ll now alter the robot’s **pose** and **measurement** values to **noisy** ones. Add the following noise values:
+  - `Forward Noise`=5.0
+  - `Turn Noise`=0.1
+  - `Sense Noise`=5.0.
+  ```cpp
+  int main()
+  {
+    Robot myrobot;
+    // TODO: Simulate Noise
+    // Forward Noise=5.0, Turn Noise=0.1,Sense Noise=5.0
+    double Forward_Noise = 5.0;
+    double Turn_Noise = 0.1;
+    double Sense_Noise = 5.0;
+    myrobot.set_noise(Forward_Noise, Turn_Noise, Sense_Noise);
+
+    myrobot.set(30.0, 50.0, M_PI / 2.0);
+    myrobot.move(-M_PI / 2.0, 15.0);
+    cout << myrobot.read_sensors() << endl;
+    myrobot.move(-M_PI / 2.0, 10.0);
+    cout << myrobot.read_sensors() << endl;
+
+    return 0;
+  }
+  ```
+
+* Programming quiz: Generating Particles
+
+  You'll first **generate** 1000 particles by uniformly and randomly spreading them in the 2D map. To replicate real world conditions, you’ll **simulate noise** and add random Gaussian digits to the particle forward, turn and sensing values.
+  ```cpp
+  int main()
+  {
+    //Practice Interfacing with Robot Class
+    Robot myrobot;
+    myrobot.set_noise(5.0, 0.1, 5.0);
+    myrobot.set(30.0, 50.0, M_PI / 2.0);
+    myrobot.move(-M_PI / 2.0, 15.0);
+    //cout << myrobot.read_sensors() << endl;
+    myrobot.move(-M_PI / 2.0, 10.0);
+    //cout << myrobot.read_sensors() << endl;
+
+    //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
+
+    // Instantiating 1000 Particles each with a random position and orientation
+    int n = 1000;
+    Robot p[n];
+    //TODO: Your job is to loop over the set of particles
+    for (int i = 0; i < n; i++)
+    {
+      //TODO: For each particle add noise: Forward_Noise=0.05, Turn_Noise=0.05, and Sense_Noise=5.0
+      p[i].set_noise(0.05, 0.05, 5.0);
+      //TODO: And print its pose on a single line
+      std::cout << p[i].show_pose() << std::endl;
+    }
+    return 0;
+  }
+  ```
+
+* Programming quiz: Simulating Motion
+
+  Now that you've generated the particles, you’ll **simulate** motion for each one of them by **rotating** them and **moving** them forward.
+  ```cpp
+  int main()
+  {
+    //Practice Interfacing with Robot Class
+    Robot myrobot;
+    myrobot.set_noise(5.0, 0.1, 5.0);
+    myrobot.set(30.0, 50.0, M_PI / 2.0);
+    myrobot.move(-M_PI / 2.0, 15.0);
+    //cout << myrobot.read_sensors() << endl;
+    myrobot.move(-M_PI / 2.0, 10.0);
+    //cout << myrobot.read_sensors() << endl;
+
+    // Create a set of particles
+    int n = 1000;
+    Robot p[n];
+
+    for (int i = 0; i < n; i++) {
+        p[i].set_noise(0.05, 0.05, 5.0);
+        //cout << p[i].show_pose() << endl;
+    }
+
+    //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
+
+    //Now, simulate motion for each particle
+    //TODO: Create a new particle set 'p2'
+    Robot p2;
+    //TODO: Rotate each particle by 0.1 and move it forward by 5.0
+    p2.move(0.1, 5.0);
+    //TODO: Assign 'p2' to 'p' and print the particle poses, each on a single line
+    for (int i = 0; i < n; i++)
+    {
+      p[i] = p2;
+      std::cout << p[i].show_pose() << endl;
+    }
+
+    Robot p2[n];
+    for (int i = 0; i < n; i++) {
+        p2[i] = p[i].move(0.1, 5.0);
+        p[i] = p2[i];
+        cout << p[i].show_pose() << endl;
+    }
+
+    return 0;
+  }
+  ```
+
 ### MCL vs EKF
 
 ![](images/MCLvsEKF.png)
