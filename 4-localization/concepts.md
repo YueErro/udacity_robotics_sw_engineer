@@ -794,6 +794,46 @@ int main()
   }
   ```
 
+* Programming quiz: Resampling Wheel
+
+  Now that you’ve learned the **resampling** wheel pseudo code, you'll try to implement it in C++. In this quiz, resample the particles with a sample probability proportional to the importance weight
+  ```cpp
+  //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
+
+  //TODO: Resample the particles with a sample probability proportional to the importance weight
+  Robot p3[n];
+  int index = gen_real_random() * n;
+  double beta = 0.0;
+  double w_max = max(w, n);
+
+  for (int i = 0; i < n; i++)
+  {
+    beta += gen_real_random() * 2.0 * w_max;
+    while (beta > w[index])
+    {
+      beta -= w[index];
+      index = mod((index + 1), n);
+    }
+    p3[i] = p[index];
+  }
+  for (int k=0; k < n; k++)
+  {
+    p[k] = p3[k];
+    cout << p[k].show_pose() << endl;
+  }
+  ```
+
+* Programming quiz: Error
+
+  You’ve just coded the MCL algorithm, and now you should evaluate the overall quality of your solution. To do so, you’ll need to compute the average distance between the particles and the robot. A good solution will result in an average distance smaller than a meter. Now, use the evaluation function and compute the average distance, or error at each iteration.
+  ```cpp
+  //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
+
+  // TODO: Evaluate the error by priting it in this form:
+  // cout << "Step = " << t << ", Evaluation = " << ErrorValue << endl;
+  cout << "Step = " << t << ", Evaluation = " << evaluation(myrobot, p, n) << endl;
+  ```
+
 ### MCL vs EKF
 
 ![](images/MCLvsEKF.png)
