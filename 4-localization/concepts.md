@@ -628,7 +628,7 @@ int main()
 * Does the orientation of particles play a role in estimating the robot's pose?
   - Yes, definitely!
 
-* Programming quiz: Fist interaction
+* Programming quiz: First interaction
 
   Now that you’ve reviewed the Robot class, it’s time to **interact** with it. In this quiz, you will be asked to fill in the missing **values** and **statements** to simulate robot motion.
   ```cpp
@@ -717,31 +717,18 @@ int main()
 
   You'll first **generate** 1000 particles by uniformly and randomly spreading them in the 2D map. To replicate real world conditions, you’ll **simulate noise** and add random Gaussian digits to the particle forward, turn and sensing values.
   ```cpp
-  int main()
+  //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
+
+  // Instantiating 1000 Particles each with a random position and orientation
+  int n = 1000;
+  Robot p[n];
+  //TODO: Your job is to loop over the set of particles
+  for (int i = 0; i < n; i++)
   {
-    //Practice Interfacing with Robot Class
-    Robot myrobot;
-    myrobot.set_noise(5.0, 0.1, 5.0);
-    myrobot.set(30.0, 50.0, M_PI / 2.0);
-    myrobot.move(-M_PI / 2.0, 15.0);
-    //cout << myrobot.read_sensors() << endl;
-    myrobot.move(-M_PI / 2.0, 10.0);
-    //cout << myrobot.read_sensors() << endl;
-
-    //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
-
-    // Instantiating 1000 Particles each with a random position and orientation
-    int n = 1000;
-    Robot p[n];
-    //TODO: Your job is to loop over the set of particles
-    for (int i = 0; i < n; i++)
-    {
-      //TODO: For each particle add noise: Forward_Noise=0.05, Turn_Noise=0.05, and Sense_Noise=5.0
-      p[i].set_noise(0.05, 0.05, 5.0);
-      //TODO: And print its pose on a single line
-      std::cout << p[i].show_pose() << std::endl;
-    }
-    return 0;
+    //TODO: For each particle add noise: Forward_Noise=0.05, Turn_Noise=0.05, and Sense_Noise=5.0
+    p[i].set_noise(0.05, 0.05, 5.0);
+    //TODO: And print its pose on a single line
+    std::cout << p[i].show_pose() << std::endl;
   }
   ```
 
@@ -749,47 +736,73 @@ int main()
 
   Now that you've generated the particles, you’ll **simulate** motion for each one of them by **rotating** them and **moving** them forward.
   ```cpp
-  int main()
+  //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
+
+  //Now, simulate motion for each particle
+  //TODO: Create a new particle set 'p2'
+  Robot p2;
+  //TODO: Rotate each particle by 0.1 and move it forward by 5.0
+  p2.move(0.1, 5.0);
+  //TODO: Assign 'p2' to 'p' and print the particle poses, each on a single line
+  for (int i = 0; i < n; i++)
   {
-    //Practice Interfacing with Robot Class
-    Robot myrobot;
-    myrobot.set_noise(5.0, 0.1, 5.0);
-    myrobot.set(30.0, 50.0, M_PI / 2.0);
-    myrobot.move(-M_PI / 2.0, 15.0);
-    //cout << myrobot.read_sensors() << endl;
-    myrobot.move(-M_PI / 2.0, 10.0);
-    //cout << myrobot.read_sensors() << endl;
+    p[i] = p2;
+    std::cout << p[i].show_pose() << endl;
+  }
 
-    // Create a set of particles
-    int n = 1000;
-    Robot p[n];
+  Robot p2[n];
+  for (int i = 0; i < n; i++)
+  {
+    p2[i] = p[i].move(0.1, 5.0);
+    p[i] = p2[i];
+    cout << p[i].show_pose() << endl;
+  }
+  ```
+* Programming quiz: Importance Weight
 
-    for (int i = 0; i < n; i++) {
-        p[i].set_noise(0.05, 0.05, 5.0);
-        //cout << p[i].show_pose() << endl;
-    }
+  So far, you’ve generated the particles and simulated motion. Now, you should assign an **importance weight** to each one of the generated particles. Scroll down to the main function. follow the instructions and generate a weight vector which holds the weight values of the 1000 particles.
+  ```cpp
+  //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
-    //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
+  //TODO: Generate particle weights depending on robot's measurement
+  //TODO: Print particle weights, each on a single line
+  double w[n];
+  for (int i = 0; i < n; i++)
+  {
+    w[i] = p[i].measurement_prob(z);
+    std::cout << w[i] << std::endl;
+  }
+  ```
+* Programming quiz: Resamping
 
-    //Now, simulate motion for each particle
-    //TODO: Create a new particle set 'p2'
-    Robot p2;
-    //TODO: Rotate each particle by 0.1 and move it forward by 5.0
-    p2.move(0.1, 5.0);
-    //TODO: Assign 'p2' to 'p' and print the particle poses, each on a single line
+  Suppose that you have 5 particles, each with an importance weight. **Compute** the probability of drawing each particle in the new set. Use the C++ coding section and follow the instructions to **print** the results.
+  ```cpp
+  #include <iostream>
+
+  using namespace std;
+
+  double w[] = { 0.6, 1.2, 2.4, 0.6, 1.2 };//You can also change this to a vector
+  double sum = 0;
+  //TODO: Define a  ComputeProb function and compute the Probabilities
+  void computeProb(double w[], int n)
+  {
     for (int i = 0; i < n; i++)
     {
-      p[i] = p2;
-      std::cout << p[i].show_pose() << endl;
+      sum = sum + w[i];
     }
-
-    Robot p2[n];
-    for (int i = 0; i < n; i++) {
-        p2[i] = p[i].move(0.1, 5.0);
-        p[i] = p2[i];
-        cout << p[i].show_pose() << endl;
+    for (int i = 0; i < n; i++)
+    {
+      w[i] = w[i] / sum;
+      cout << "P" << i + 1 << "=" << w[i] << endl;
     }
-
+  }
+  int main()
+  {
+    //TODO: Print Probabilites each on a single line:
+    //P1=Value
+    //:
+    //P5=Value
+    computeProb(w, sizeof(w)/sizeof(w[0]));
     return 0;
   }
   ```
