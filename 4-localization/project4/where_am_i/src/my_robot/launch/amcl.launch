@@ -18,10 +18,10 @@
     <remap from="scan" to="my_robot/laser/scan"/>
     <param name="base_global_planner" value="navfn/NavfnROS" />
     <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
-    <rosparam file="$(find udacity_bot)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
-    <rosparam file="$(find udacity_bot)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
-    <rosparam file="$(find udacity_bot)/config/local_costmap_params.yaml" command="load" />
-    <rosparam file="$(find udacity_bot)/config/global_costmap_params.yaml" command="load" />
-    <rosparam file="$(find udacity_bot)/config/base_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find my_robot)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find my_robot)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find my_robot)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find my_robot)/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find my_robot)/config/base_local_planner_params.yaml" command="load" />
   </node>
 </launch>
