@@ -19,9 +19,12 @@ Student submited all required files:
 
 #### Simulation Setup
 * Did the student set up the simulation environment properly?
-Student's simulation world and robot could properly load in Gazebo.
+
+  Student's simulation world and robot could properly load in Gazebo.
+
 * Is the student's simulation setup suitable for the localization task?
-Student's simulation setup should have the appropriate number of landmarks or geometric features to perform localization.
+
+  Student's simulation setup should have the appropriate number of landmarks or geometric features to perform localization.
 
 #### Localization Setup
 * Did the student correctly build the launch files for localization?
@@ -30,8 +33,10 @@ Student's launch file contains all required nodes:
   * AMCL node `amcl`
   * Move Base node `move_base`
   * The student's program should be able to launch without errors
+
 * Did the student properly set the parameters for localization?
-Student filled required parameters for AMCL and move_base in the launch file and the config file
+
+  Student filled required parameters for AMCL and move_base in the launch file and the config file
 
 #### Localization Performance
 Is the student's robot able to localize itself?
