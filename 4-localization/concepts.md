@@ -165,7 +165,7 @@ The Kalman filter is an estimation algorithm that is very prominent in controls.
     double mu = 0;
     double sig = 1000;
 
-    //######TODO: Put your code here below this line######//
+    //######Put your code here below this line######//
 
     // Loop through all the measurments
     int measurements_size = sizeof(measurements) / sizeof(measurements[0]);
@@ -637,18 +637,18 @@ int main()
     // Instantiating a robot object from the Robot class
     Robot myrobot;
 
-    // TODO: Set robot new position to x=10.0, y=10.0 and orientation=0
+    // Set robot new position to x=10.0, y=10.0 and orientation=0
     // Fill in the position and orientation values in myrobot.set() function
     myrobot.set(10.0, 10.0, 0.0);
 
     // Printing out the new robot position and orientation
     cout << myrobot.show_pose() << endl;
 
-    // TODO: Rotate the robot by PI/2.0 and then move him forward by 10.0
+    // Rotate the robot by PI/2.0 and then move him forward by 10.0
     // Use M_PI for the pi value
     myrobot.move(M_PI/2.0, 10.0);
 
-    // TODO: Print out the new robot position and orientation
+    // Print out the new robot position and orientation
     std::cout << myrobot.show_pose() << std::endl;
 
     // Printing the distance from the robot toward the eight landmarks
@@ -664,22 +664,22 @@ int main()
   ```cpp
   int main()
   {
-    // TODO: Instantiate a robot object from the Robot class
+    // Instantiate a robot object from the Robot class
     Robot my_robot;
 
-    // TODO: Set robot new position to x=30.0, y=50.0 and orientation=PI/2
+    // Set robot new position to x=30.0, y=50.0 and orientation=PI/2
     my_robot.set(30.0, 50.0, M_PI/2.0);
 
-    // TODO: Turn clockwise by PI/2 and move by 15 meters
+    // Turn clockwise by PI/2 and move by 15 meters
     my_robot.move(-M_PI/2.0, 15.0);
 
-    // TODO: Print the distance from the robot toward the eight landmarks
+    // Print the distance from the robot toward the eight landmarks
     std::cout << my_robot.read_sensors() << std::endl;
 
-    // TODO: Turn clockwise by PI/2 and move by 10 meters
+    // Turn clockwise by PI/2 and move by 10 meters
     my_robot.move(-M_PI/2.0, 10.0);
 
-    // TODO: Print the distance from the robot toward the eight landmarks
+    // Print the distance from the robot toward the eight landmarks
     std::cout << my_robot.read_sensors() << std::endl;
 
     return 0;
@@ -696,7 +696,7 @@ int main()
   int main()
   {
     Robot myrobot;
-    // TODO: Simulate Noise
+    // Simulate Noise
     // Forward Noise=5.0, Turn Noise=0.1,Sense Noise=5.0
     double Forward_Noise = 5.0;
     double Turn_Noise = 0.1;
@@ -722,12 +722,12 @@ int main()
   // Instantiating 1000 Particles each with a random position and orientation
   int n = 1000;
   Robot p[n];
-  //TODO: Your job is to loop over the set of particles
+  //Your job is to loop over the set of particles
   for (int i = 0; i < n; i++)
   {
-    //TODO: For each particle add noise: Forward_Noise=0.05, Turn_Noise=0.05, and Sense_Noise=5.0
+    //For each particle add noise: Forward_Noise=0.05, Turn_Noise=0.05, and Sense_Noise=5.0
     p[i].set_noise(0.05, 0.05, 5.0);
-    //TODO: And print its pose on a single line
+    //And print its pose on a single line
     std::cout << p[i].show_pose() << std::endl;
   }
   ```
@@ -739,11 +739,11 @@ int main()
   //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
   //Now, simulate motion for each particle
-  //TODO: Create a new particle set 'p2'
+  //Create a new particle set 'p2'
   Robot p2;
-  //TODO: Rotate each particle by 0.1 and move it forward by 5.0
+  //Rotate each particle by 0.1 and move it forward by 5.0
   p2.move(0.1, 5.0);
-  //TODO: Assign 'p2' to 'p' and print the particle poses, each on a single line
+  //Assign 'p2' to 'p' and print the particle poses, each on a single line
   for (int i = 0; i < n; i++)
   {
     p[i] = p2;
@@ -764,8 +764,8 @@ int main()
   ```cpp
   //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
-  //TODO: Generate particle weights depending on robot's measurement
-  //TODO: Print particle weights, each on a single line
+  //Generate particle weights depending on robot's measurement
+  //Print particle weights, each on a single line
   double w[n];
   for (int i = 0; i < n; i++)
   {
@@ -783,7 +783,7 @@ int main()
 
   double w[] = { 0.6, 1.2, 2.4, 0.6, 1.2 };//You can also change this to a vector
   double sum = 0;
-  //TODO: Define a  ComputeProb function and compute the Probabilities
+  //Define a  ComputeProb function and compute the Probabilities
   void computeProb(double w[], int n)
   {
     for (int i = 0; i < n; i++)
@@ -798,7 +798,7 @@ int main()
   }
   int main()
   {
-    //TODO: Print Probabilites each on a single line:
+    //Print Probabilites each on a single line:
     //P1=Value
     //:
     //P5=Value
@@ -813,7 +813,7 @@ int main()
   ```cpp
   //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
-  //TODO: Resample the particles with a sample probability proportional to the importance weight
+  //Resample the particles with a sample probability proportional to the importance weight
   Robot p3[n];
   int index = gen_real_random() * n;
   double beta = 0.0;
@@ -842,7 +842,7 @@ int main()
   ```cpp
   //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
-  // TODO: Evaluate the error by priting it in this form:
+  // Evaluate the error by priting it in this form:
   // cout << "Step = " << t << ", Evaluation = " << ErrorValue << endl;
   cout << "Step = " << t << ", Evaluation = " << evaluation(myrobot, p, n) << endl;
   ```
