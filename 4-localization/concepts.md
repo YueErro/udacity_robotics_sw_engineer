@@ -630,7 +630,7 @@ int main()
 
 * Programming quiz: First interaction
 
-  Now that you’ve reviewed the Robot class, it’s time to **interact** with it. In this quiz, you will be asked to fill in the missing **values** and **statements** to simulate robot motion.
+  Now that you've reviewed the Robot class, it's time to **interact** with it. In this quiz, you will be asked to fill in the missing **values** and **statements** to simulate robot motion.
   ```cpp
   int main()
   {
@@ -660,7 +660,7 @@ int main()
 
 * Programming quiz: Motion and Sensing
 
-  In the previous lesson, you’ve learned how to interact with the Robot class. Now, you’ll be asked to **instantiate** a robot object, simulate **motion** update and **sensor** update similar to what you’ve learned in the first quiz.
+  In the previous lesson, you've learned how to interact with the Robot class. Now, you'll be asked to **instantiate** a robot object, simulate **motion** update and **sensor** update similar to what you've learned in the first quiz.
   ```cpp
   int main()
   {
@@ -688,7 +688,7 @@ int main()
 
 * Programming quiz: Noise
 
-  You’ll now alter the robot’s **pose** and **measurement** values to **noisy** ones. Add the following noise values:
+  You'll now alter the robot's **pose** and **measurement** values to **noisy** ones. Add the following noise values:
   - `Forward Noise`=5.0
   - `Turn Noise`=0.1
   - `Sense Noise`=5.0.
@@ -715,7 +715,7 @@ int main()
 
 * Programming quiz: Generating Particles
 
-  You'll first **generate** 1000 particles by uniformly and randomly spreading them in the 2D map. To replicate real world conditions, you’ll **simulate noise** and add random Gaussian digits to the particle forward, turn and sensing values.
+  You'll first **generate** 1000 particles by uniformly and randomly spreading them in the 2D map. To replicate real world conditions, you'll **simulate noise** and add random Gaussian digits to the particle forward, turn and sensing values.
   ```cpp
   //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
@@ -734,7 +734,7 @@ int main()
 
 * Programming quiz: Simulating Motion
 
-  Now that you've generated the particles, you’ll **simulate** motion for each one of them by **rotating** them and **moving** them forward.
+  Now that you've generated the particles, you'll **simulate** motion for each one of them by **rotating** them and **moving** them forward.
   ```cpp
   //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
@@ -760,7 +760,7 @@ int main()
   ```
 * Programming quiz: Importance Weight
 
-  So far, you’ve generated the particles and simulated motion. Now, you should assign an **importance weight** to each one of the generated particles. Scroll down to the main function. follow the instructions and generate a weight vector which holds the weight values of the 1000 particles.
+  So far, you've generated the particles and simulated motion. Now, you should assign an **importance weight** to each one of the generated particles. Scroll down to the main function. follow the instructions and generate a weight vector which holds the weight values of the 1000 particles.
   ```cpp
   //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
@@ -809,7 +809,7 @@ int main()
 
 * Programming quiz: Resampling Wheel
 
-  Now that you’ve learned the **resampling** wheel pseudo code, you'll try to implement it in C++. In this quiz, resample the particles with a sample probability proportional to the importance weight
+  Now that you've learned the **resampling** wheel pseudo code, you'll try to implement it in C++. In this quiz, resample the particles with a sample probability proportional to the importance weight
   ```cpp
   //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
@@ -838,7 +838,7 @@ int main()
 
 * Programming quiz: Error
 
-  You’ve just coded the MCL algorithm, and now you should evaluate the overall quality of your solution. To do so, you’ll need to compute the average distance between the particles and the robot. A good solution will result in an average distance smaller than a meter. Now, use the evaluation function and compute the average distance, or error at each iteration.
+  You've just coded the MCL algorithm, and now you should evaluate the overall quality of your solution. To do so, you'll need to compute the average distance between the particles and the robot. A good solution will result in an average distance smaller than a meter. Now, use the evaluation function and compute the average distance, or error at each iteration.
   ```cpp
   //####   DON'T MODIFY ANYTHING ABOVE HERE! ENTER CODE BELOW ####
 
