@@ -83,7 +83,7 @@ A **visual** aspect of an object is it's graphical representation and does not a
 A **collision** aspect of an object is used by the physics engine for collision checking.
 
 #### Environment variables
-There are many environment variables that Gazebo uses, primarily to locate files (world, model, …) and set up communications between **gzserver** and **gzclient**.
+There are many environment variables that Gazebo uses, primarily to locate files (world, model, ...) and set up communications between **gzserver** and **gzclient**.
 
 `GAZEBO_MODEL_PATH`: List of directories where Gazebo looks to populate a model file.
 
