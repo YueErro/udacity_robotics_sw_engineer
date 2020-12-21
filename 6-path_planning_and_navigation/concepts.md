@@ -524,7 +524,7 @@ The advantage with this approach is that the number of nodes that need to be exp
 
 ![](images/bidirectional_search.png)
 
-#### Path proximity to obstacles7
+#### Path proximity to obstacles
 Another concern with the search of discretized spaces includes the proximity of the final path to obstacles or other hazards. When discretizing a space with methods such as cell decomposition, empty cells are not differentiated from one another. The optimal path will often lead the robot very close to obstacles. In certain scenarios this can be quite problematic, as it will increase the chance of collisions due to the uncertainty of robot localization. The optimal path may not be the best path. To avoid this, a map can be 'smoothed' prior to applying a search to it, marking cells near obstacles with a higher cost than free cells. Then the path found by A* search may pass by obstacles with some additional clearance.
 
 #### Paths aligned to grid
