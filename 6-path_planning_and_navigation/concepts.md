@@ -5,6 +5,10 @@
   * [Discrete planning](#discrete-planning)
   * [Sample-Based planning](#sample-based-planning)
   * [Probabilistic path planning](#probabilistic-path-planning)
+    * [Probabilistic Roadmap (PRM)](#probabilistic-roadmap-prm)
+    * [Rapidly Exploring Random Tree Method (RRT)](#rapidly-exploring-random-tree-method-rrt)
+  * [Overall concerns](#overall-concerns)
+  * [Markov Decision Process](#markov-decision-process)
 * [Continuous representation](#Continuous-representation)
 * [Minkowski Sum](#minkowski-sum)
   * [Quiz: Minkowski Sum](#quiz-minkowski-sum)
@@ -81,6 +85,24 @@ The image below displays a graph representation of a 2-dimensional workspace cre
 
 ![](images/sample_base_planning.png)
 
+Robotic systems can be classified into two different categories - holonomic and non-holonomic. **Holonomic systems** can be defined as systems where every constraint depends exclusively on the current pose and time, and not on any derivatives with respect to time. Nonholonomic systems, on the other hand, are dependent on derivatives. Path planning for **nonholonomic systems** is more difficult due to the added constraints.
+
+A **probabilistically complete** algorithm is one who's probability of finding a path, if one exists, increases to 1 as time goes to infinity.
+
+Similarly, the requirement of an optimal path can be weakened to that of a feasible path. A feasible path is one that obeys all environmental and robot constraints such as obstacles and motion constraints. For high-dimensional problems with long computational times, it may take unacceptably long to find the optimal path, whereas a feasible path can be found with relative ease. Finding a feasible path proves that a path from start to goal exists, and if needed, the path can be optimized locally to improve performance.
+
+Sample-based planning is probabilistically complete and looks for a feasible path instead of the optimal path.
+
+**Sample-Based Path Planning**
+
+Sample-based path planning differs from combinatorial path planning in that it does not try to systematically discretize the entire configuration space. Instead, it samples the configuration space randomly (or semi-randomly) to build up a representation of the space. The resultant graph is not as precise as one created using combinatorial planning, but it is much quicker to construct because of the relatively small number of samples used.
+
+Such a method is probabilistically complete because as time passes and the number of samples approaches infinity, the probability of finding a path, if one exists, approaches 1.
+
+Such an approach is very effective in high-dimensional spaces, however it does have some downfalls. Sampling a space uniformly is not likely to reach small or narrow areas, such as the passage depicted in the image below. Since the passage is the only way to move from start to goal, it is critical that a sufficient number of samples occupy the passage, or the algorithm will return ‘no solution found' to a problem that clearly has a solution.
+
+Different sample-based planning approaches exist, each with their own benefits and downfalls.
+
 #### Probabilistic path planning
 The last type of path planning that you will learn about in this module is probabilistic path planning. While the first two approaches looked at the path planning problem generically - with no understanding of who or what may be executing the actions - probabilistic path planning takes into account the uncertainty of the robot's motion.
 
@@ -89,6 +111,304 @@ While this may not provide significant benefits in some environments, it is espe
 The image below displays probabilistic path planning applied to an environment containing a hazard (the lake at the top right).
 
 ![](images/probabilistic_path_planning.png)
+
+##### Probabilistic Roadmap (PRM)
+**Algorithm**
+
+<pre>
+<b>Initialize</b> an empty graph
+<b>For</b> n iterations:
+  <b>Generate</b> a random configuration.
+  <b>If</b> the configuration is collision free:
+    <b>Add</b> the configuration to the graph.
+    <b>Find</b> the k-nearest neighbours of the configuration.
+    <b>For</b> each of the k neighbours:
+      <b>Try to find</b> a collision-free path between
+        the neighbour and original configuration.
+        <b>If</b> edge is collision-free:
+          <b>Add</b> it to the graph.
+</pre>
+
+After the learning phase, comes the query phase.
+
+**Setting Parameters**
+
+There are several parameters in the PRM algorithm that require tweaking to achieve success in a particular application. Firstly, the **number of iterations** can be adjusted - the parameter controls between how detailed the resultant graph is and how long the computation takes. For path planning problems in wide-open spaces, additional detail is unlikely to significantly improve the resultant path. However, the additional computation is required in complicated environments with narrow passages between obstacles. Beware, setting an insufficient number of iterations can result in a ‘path not found' if the samples do not adequately represent the space.
+
+Another decision that a robotics engineer would need to make is **how to find neighbors** for a randomly generated configuration. One option is to look for the k-nearest neighbors to a node. To do so efficiently, a [k-d](https://xlinux.nist.gov/dads/HTML/kdtree.html) tree can be utilized - to break up the space into ‘bins' with nodes, and then search the bins for the nearest nodes. Another option is to search for any nodes within a certain distance of the goal. Ultimately, knowledge of the environment and the solution requirements will drive this decision-making process.
+
+The choice for what type of **local planner** to use is another decision that needs to be made by the robotics engineer. The local planner demonstrated in the video is an example of a very simple planner. For most scenarios, a simple planner is preferred, as the process of checking an edge for collisions is repeated many times (k*n times, to be exact) and efficiency is key. However, more powerful planners may be required in certain problems. In such a case, the local planner could even be another PRM.
+
+**Probabilistically Complete**
+
+As discussed before, sample-based path planning algorithms are probabilistically complete. Now that you have seen one such algorithm in action, you can see why this is the case. As the number of iterations approaches infinity, the graph approaches completeness and the optimal path through the graph approaches the optimal path in reality.
+
+**PRM is a Multi-Query Planner**
+
+The Learning Phase takes significantly longer to implement than the Query Phase, which only has to connect the start and goal nodes, and then search for a path. However, the graph created by the Learning Phase can be reused for many subsequent queries. For this reason, PRM is called a **multi-query planner**.
+
+This is very beneficial in static or mildly-changing environments. However, some environments change so quickly that PRM's multi-query property cannot be exploited. In such situations, PRM's additional detail and computational slow nature is not appreciated. A quicker algorithm would be preferred - one that doesn't spend time going in all directions without influence by the start and goal.
+
+**Quiz**
+
+Which of the following statements are true about Probabilistic Roadmaps?
+
+* PRM is a multi-query method (ie. the resultant graph can be used for multiple queries).
+* If an unsufficient iterations of the PRM algorithm are run, there is a risk of finding an inefficient path or not finding a path at all.
+
+##### Rapidly Exploring Random Tree Method (RRT)
+The pseudocode for the RRT learning phase is provided below.
+
+**Algorithm**
+
+<pre>
+<b>Initialize</b> two empty trees.
+<b>Add</b> start node to tree #1.
+<b>Add</b> goal node to tree #2.
+<b>For</b> n iterations, or until an edge connects trees #1 & #2:
+  <b>Generate</b> a random configuration (alternating trees).
+  <b>If</b> the configuration is collision free:
+    <b>Find</b> the closest neighbour on the tree to the configuration
+    <b>If</b> the configuration is less than a distance δ away from the neighbour:
+      <b>Try to connect</b> the two with a local planner.
+    <b>Else:</b>
+      <b>Replace</b> the randomly generated configuration
+        with a new configuration that falls along the same path,
+        but a distance δ from the neighbour.
+      <b>Try to connect</b> the two with a local planner.
+    <b>If</b> node is added successfully:
+      <b>Try to connect</b> the new node to the closest neighbour.
+</pre>
+
+**Setting Parameters**
+
+Just like with PRM, there are a few parameters that can be tuned to make RRT more efficient for a given application.
+
+The first of these parameters is the **sampling method** (ie. how a random configuration is generated). As discussed in the video, you can sample uniformly - which would favour wide unexplored spaces, or you can sample with a bias - which would cause the search to advance greedily in the direction of the goal. Greediness can be beneficial in simple planning problems, however in some environments it can cause the robot to get stuck in a local minima. It is common to utilize a uniform sampling method with a small hint of bias.
+
+The next parameter that can be tuned is δ. As RRT starts to generate random configurations, a large proportion of these configurations will lie further than a distance δ from the closest configuration in the graph. In such a situation, a randomly generated node will dictate the direction of growth, while δ is the growth rate.
+
+Choosing a small δ will result in a large density of nodes and small growth rate. On the other hand, choosing a large δ may result in lost detail, as well as an increasing number of nodes being unable to connect to the graph due to the greater chance of collisions with obstacles. δ must be chosen carefully, with knowledge of the environment and requirements of the solution.
+
+**Single-Query Planner**
+
+Since the RRT method explores the graph starting with the start and goal nodes, the resultant graph cannot be applied to solve additional queries. RRT is a single-query planner.
+
+RRT is, however, much quicker than PRM at solving a path planning problem. This is so because it takes into account the start and end nodes, and limits growth to the area surrounding the existing graph instead of reaching out into all distant corners, the way PRM does. RRT is more efficient than PRM at solving large path planning problems (ex. ones with hundreds of dimensions) in dynamic environments.
+
+Generally speaking, RRT is able to solve problems with 7 dimensions in a matter of milliseconds, and may take several minutes to solve problems with over 20 dimensions. In comparison, such problems would be impossible to solve with the combinatorial path planning method.
+
+**RRT & Non-holonomic Systems**
+
+While we will not go into significant detail on this topic, the RRT method supports planning for non-holonomic systems, while the PRM method does not. This is so because the RRT method can take into consideration the additional constraints (such as a car's turning radius at a particular speed) when adding nodes to a graph, the same way it already takes into consideration how far away a new node is from an existing tree.
+
+**Quiz**
+
+Which of the following statements are true about the Rapidly Exploring Random Tree method?
+
+* RRT can be applied to path planning with non-holonomic systems.
+* If δ is set to a large value, the algorithm's efficiency will drop, as the local planner is more likely to encounter collisions along a longer path.
+
+##### Path Smoothing
+**Algorithm**
+
+The following algorithm provides a method for smoothing the path by shortcutting.
+
+<pre>
+<b>For</b> n iterations:
+  <b>Select</b> two nodes from the graph
+  <b>If</b> the edge between the two nodes is shorter than the existing path between the nodes:
+    <b>Use local planner</b> to see if edge is collision-free.
+    <b>If</b> collision-free:
+      <b>Replace</b> existing path with edge between the two nodes.
+</pre>
+
+Keep in mind that the path's distance is not the only thing that can be optimized by the Path Shortcutter algorithm - it could optimize for path smoothness, expected energy use by the robot, safety, or any other measurable factor.
+
+After the Path Shortcutting algorithm is applied, the result is a more optimized path. It may still not be the _optimal path_, but it should have at the very least moved towards a local minimum. There exist more complex, informed algorithms that can improve the performance of the Path Shortcutter. These are able to use information about the workspace to better guide the algorithm to a more optimal solution.
+
+For large multi-dimensional problems, it is not uncommon for the time taken to optimize a path to exceed the time taken to search for a feasible solution in the first place.
+
+#### Overall concerns
+**Not Complete**
+
+Sample-based planning is not complete, it is probabilistically complete. In applications where decisions need to be made quickly, PRM & RRT may fail to find a path in difficult environments, such as the one shown below.
+
+![](images/overall_concerns.png)
+
+To path plan in an environment such as the one presented above, alternate means of sampling can be introduced (such as Gaussian or Bridge sampling). Alternate methods bias their placement of samples to obstacle edges or vertices of the open space.
+
+**Not Optimal**
+
+Sample-based path planning isn't optimal either - while an algorithm such as A* will find the most optimal path within the graph, the graph is not a thorough representation of the space, and so the true optimal path is unlikely to be represented in the graph.
+
+**Conclusion**
+
+Overall, there is no silver bullet algorithm for sample-based path planning. The PRM & RRT algorithms perform acceptably in most environments, while others require customized solutions. An algorithm that sees a performance improvement in one application, is not guaranteed to perform better in others.
+
+Ultimately, sample-based path planning makes multi-dimensional path planning feasible!
+
+#### Markov Decision Process
+**Recycling Robot Example**
+
+Let's say we have a recycling robot, as an example. The robot's goal is to drive around its environment and pick up as many cans as possible. It has a set of **states** that it could be in, and a set of **actions** that it could take. The robot receives a **reward** for picking up cans; however, it can also receive a negative reward (a penalty) if it runs out of battery and get stranded.
+
+The robot has a non-deterministic **transition model** (sometimes called the one-step dynamics). This means that an action cannot guarantee to lead a robot from one state to another state. Instead, there is a probability associated with resulting in each state.
+
+Say at an arbitrary time step t, the state of the robot's battery is high (S<sub>t</sub> = highs). In response, the agent decides to search for cans (A<sub>t</sub> = search). In such a case, there is a 70% chance of the robot's battery charge remaining high and a 30% chance that it will drop to low.
+
+Let's revisit the definition of an MDP before moving forward.
+
+**MDP Definition**
+
+A Markov Decision Process is defined by:
+* A set of states: S
+* Initial state: s<sub>0</sub>
+* A set of actions: A
+* The transition model: T(s,a,s')
+* A set of rewards: R
+
+The transition model is the probability of reaching a state _s'_ from a state _s_ by executing action _a_. It is often written as T(s,a,s').
+
+The Markov assumption states that the probability of transitioning from _s_ to _s'_
+′
+  is only dependent on the present state, ss, and not on the path taken to get to ss.
+
+One notable difference between MDPs in probabilistic path planning and MDPs in reinforcement learning, is that in path planning the robot is fully aware of all of the items listed above (state, actions, transition model, rewards). Whereas in RL, the robot was aware of its state and what actions it had available, but it was not aware of the rewards or the transition model.
+
+**Mobile Robot Example**
+
+In our mobile robot example, movement actions are non-deterministic. Every action will have a probability less than 1 of being successfully executed. This can be due to a number of reasons such as wheel slip, internal errors, difficult terrain, etc. The image below showcases a possible transition model for our exploratory rover, for a scenario where it is trying to move forward one cell.
+
+![](images/MDP1.png)
+
+As you can see, the intended action of moving forward one cell is only executed with a probability of 0.8 (80%). With a probability of 0.1 (10%), the rover will move left, or right. Let's also say that bumping into a wall will cause the robot to remain in its present cell.
+
+Let's provide the rover with a simple example of an environment for it to plan a path in. The environment shown below has the robot starting in the top left cell, and the robot's goal is in the bottom right cell. The mountains represent terrain that is more difficult to pass, while the pond is a hazard to the robot. Moving across the mountains will take the rover longer than moving on flat land, and moving into the pond may drown and short circuit the robot.
+
+![](images/MDP2.png)
+
+**Combinatorial Path Planning Solution**
+
+If we were to apply A* search to this discretized 4-connected environment, the resultant path would have the robot move right 2 cells, then down 2 cells, and right once more to reach the goal (or R-R-D-R-D, which is an equally optimal path). This truly is the shortest path, however, it takes the robot right by a very dangerous area (the pond). There is a significant chance that the robot will end up in the pond, failing its mission.
+
+If we are to path plan using MDPs, we might be able to get a better result!
+
+**Probabilistic Path Planning Solution**
+
+In each state (cell), the robot will receive a certain reward, R(s). This reward could be positive or negative, but it cannot be infinite. It is common to provide the following rewards:
+* small negative rewards to states that are not the goal state(s) - to represent the cost of time passing (a slow moving robot would incur a greater penalty than a speedy robot)
+* large positive rewards for the goal state(s)
+* large negative rewards for hazardous states - in hopes of convincing the robot to avoid them.
+
+These rewards will help guide the rover to a path that is efficient, but also safe - taking into account the uncertainty of the rover's motion.
+
+The image below displays the environment with appropriate rewards assigned.
+
+![](images/MDP3.png)
+
+As you can see, entering a state that is not the goal state has a reward of -1 if it is a flat-land tile, and -3 if it is a mountainous tile. The hazardous pond has a reward of -50, and the goal has a reward of 100.
+
+With the robot's transition model identified and appropriate rewards assigned to all areas of the environment, we can now construct a policy. Read on to see how that's done in probabilistic path planning!
+
+**Poclicies**
+
+Recall from the Reinforcement Learning lesson that a solution to a Markov Decision Process is called a policy, and is denoted with the letter iπ.
+
+A **policy** is a mapping from states to actions. For every state, a policy will inform the robot of which action it should take. An **optimal policy**, denoted π*, informs the robot of the _best_ action to take from any state, to maximize the overall reward. We'll study optimal policies in more detail below.
+
+If you aren't comfortable with policies, it is highly recommended that you return to the RL lesson and re-visit the sections that take you through the Gridworld Example, State-Value Functions, and Bellman Equations. These lessons demonstrate what a policy is, how state-value is calculated, and how the Bellman equations can be used to compute the optimal policy. These lessons also step you through a gridworld example that is _simpler_ than the one you will be working with here, so it is wise to get acquainted with the RL example first.
+
+The image below displays the set of actions that the robot can take in its environment. Note that there are no arrows leading away from the pond, as the robot is considered DOA (dead on arrival) after entering the pond. As well, no arrows leave the goal as the path planning problem is complete once the robot reaches the goal - after all, this is an _episodic task_.
+
+![](images/policy1.png)
+
+From this set of actions, a policy can be generated by selecting one action per state. Before we revisit the process of selecting the appropriate action for each policy, let's look at how some of the values above were calculated. After all, -5.9 seems like quite an odd number!
+
+Recall that the reward for entering an empty cell is -1, a mountainous cell -3, the pond -50, and the goal +100. These are the rewards defined according to the environment. However, if our robot wanted to move from one cell to another, it it not guaranteed to succeed. Therefore, we must calculate the **expected reward**, which takes into account not just the rewards set by the environment, but the robot's transition model too.
+
+Let's look at the bottom mountain cell first. From here, it is intuitively obvious that moving right is the best action to take, so let's calculate that one. If the robot's movements were deterministic, the cost of this movement would be trivial (moving to an open cell has a reward of -1). However, since our movements are non-deterministic, we need to evaluate the expected reward of this movement. The robot has a probability of 0.8 of successfully moving to the open cell, a probability of 0.1 of moving to the cell above, and a probability of 0.1 of bumping into the wall and remaining in its present cell.
+
+expected reward = 0.8 * (-1) + 0.1 * (-3) + 0.1 * (-3) = -1.4
+
+All of the expected rewards are calculated in this way, taking into account the transition model for this particular robot.
+
+The image below has all of the expected rewards filled in:
+
+![](images/policy2.png)
+
+Now that we have an understanding of our expected rewards, we can select a policy and evaluate how efficient it is. Once again, a policy is just a mapping from states to actions. If we review the set of actions depicted in the image above, and select just one action for each state - i.e. exactly one arrow leaving each cell (with the exception of the hazard and goal states) - then we have ourselves a policy.
+
+However, we're not looking for _any_ policy, we'd like to find the _optimal_ policy. For this reason, we'll need to study the utility of each state to then determine the best action to take from each state. That's what the next concept is all about!
+
+The **utility of a state** (otherwise known as the **state-value**) represents how attractive the state is with respect to the goal. Recall that for each state, the state-value function yields the expected return, if the agent (robot) starts in that state and then follows the policy for all time steps. In mathematical notation, this can be represented as so:
+
+![](images/state1.png)
+
+The notation used in path planning differs slightly from what you saw in Reinforcement Learning. But the result is identical:
+* U<sup>π</sup>(s) represents the utility of a state _s_
+* E represents the _expected_ value
+* R(s) represents the reward for state _s_.
+
+The utility of a state is the sum of the rewards that an agent would encounter if it started at that state and followed the policy to the goal.
+
+We can break the equation down, to further understand it:
+
+![](images/state1.png)
+
+Let's start by breaking up the summation and explicitly adding all states:
+
+![](images/state2.png)
+
+Then, we can pull out the first term. The expected reward for the first state is independent of the policy. While the expected reward of all future states (those between the state and the goal) depend on the policy:
+
+![](images/state3.png)
+
+Re-arranging the equation results in the following. (Recall that the prime symbol, as on s', represents the next state - like s<sub>2</sub> would be to s<sub>1</sub>):
+
+![](images/state4.png)
+
+Ultimately, the result is the following:
+
+![](images/state5.png)
+
+As you see here, calculating the utility of a state is an iterative process. It involves all of the states that the agent would visit between the present state and the goal, as dictated by the policy.
+
+As well, it should be clear that the utility of a state depends on the policy. If you change the policy, the utility of each state will change, since the sequence of states that would be visited prior to the goal may change.
+
+Recall that the **optimal policy**, denoted π*, informs the robot of the best action to take from any state, to maximize the overall reward. That is,
+
+![](images/optimal_policy.png)
+
+In a state _s_, the optimal policy π∗ will choose the action _a_ that maximizes the utility of _s_ (which, due to its iterative nature, maximizes the utilities of all future states too).
+
+While the math may make it seem intimidating, it’s as easy as looking at the set of actions and choosing the best action for every state.
+
+![](images/optimal_policy2.png)
+
+One simplification that you may have noticed us make, is omit the discounting rate γ. In the above example, γ=1 and all future actions were considered to be just as significant as the present action. This was done solely to simplify the example. After all, you have already been introduced to γ through the lessons on Reinforcement Learning.
+
+In reality, discounting is often applied in robotic path planning, since the future can be quite uncertain. The complete equation for the utility of a state is provided below:
+
+![](images/discounting.png)
+
+The process that we went through to determine the optimal policy for the mountainous environment was fairly straightforward, but it did take some intuition to identify which action was optimal for every state. In larger more complex environments, intuition may not be sufficient. In such environments, an algorithm should be applied to handle all computations and find the optimal solution to an MDP. One such algorithm is called the Value Iteration algorithm. _Iteration_ is a key word here, and you’ll see just why!
+
+The Value Iteration algorithm will initialize all state utilities to some arbitrary value - say, zero. Then, it will iteratively calculate a more accurate state utility for each state, using:
+
+![](images/value_iteration.png)
+
+![](images/algorithm.png)
+
+With every iteration, the algorithm will have a more and more accurate estimate of each state’s utility. The number of iterations of the algorithm is dictated by a function _close-enough_ which detects convergence. One way to accomplish this is to evaluate the root mean square error:
+
+![](images/rms.png)
+
+Once this error is below a predetermined threshold, the result has converged sufficiently:
+
+![](images/rms2.png)
+
+This algorithm finds the optimal policy to the MDP, regardless of what U' is initialized to (although the efficiency of the algorithm will be affected by a poor U').
 
 ### Continuous representation
 To account for the geometry of a robot and simplify the task of path planning, obstacles in the workspace can be inflated to create a new space called the configuration space (or C-space). With the obstacles inflated by the radius of the robot, the robot can then be treated as a point, making it easier for an algorithm to search for a path. The C-space is the set of _all_ robot poses, and can be broken-down into C<sub>Free</sub> and C<sub>Obs</sub>.
