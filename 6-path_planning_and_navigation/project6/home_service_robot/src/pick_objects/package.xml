@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>pick_objects</name>
+  <version>0.0.0</version>
+  <description>The pick_objects sends the robot to the desired pickup zone, displays a message that the robot reached its destination, waits 5 seconds, sends the robot to the desired drop off zone, and displays a message that it reached the drop off zone.</description>
+  <maintainer email="yue.trbj@gmail.com">Yue Erro</maintainer>
+  <license>Property</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>actionlib</build_depend>
+  <build_depend>move_base_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+
+  <build_export_depend>actionlib</build_export_depend>
+  <build_export_depend>move_base_msgs</build_export_depend>
+  <build_export_depend>roscpp</build_export_depend>
+
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>move_base_msgs</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+</package>
