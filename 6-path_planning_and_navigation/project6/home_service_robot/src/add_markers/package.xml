@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>add_markers</name>
+  <version>0.0.0</version>
+  <description>The add_markers visualizes a virtual cube picked and delivered by the robot, thus the virtual cube aprears in the robot's pickup zone, and then in the robot's drop off zone once the robot reaches that zone.</description>
+  <maintainer email="yue.trbj@gmail.com">Yue Erro</maintainer>
+  <license>Property</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>visualization_msgs</build_export_depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>
+</package>
