@@ -21,6 +21,9 @@
   - [Manually](#manually-4)
 
 ### Demo
+<p align="center">
+  <img src="demo.gif"/>
+</p> 
 
 ### Brief packages write-up
 This project make use of the following packages:
