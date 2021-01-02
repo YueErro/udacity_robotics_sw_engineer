@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   ros::Duration(5.0).sleep();
 
   goal.target_pose.pose.position.x = 0.5;
-  goal.target_pose.pose.position.y = -0.6;
+  goal.target_pose.pose.position.y = -0.1;
   // Oriented to y-
   goal.target_pose.pose.orientation.z = -0.7068252;
   goal.target_pose.pose.orientation.w = 0.7073883;
