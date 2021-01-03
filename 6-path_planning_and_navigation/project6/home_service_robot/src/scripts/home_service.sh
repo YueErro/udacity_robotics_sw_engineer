@@ -6,6 +6,6 @@ xterm  -e  " export TURTLEBOT3_MODEL=burger && roslaunch turtlebot3_gazebo turtl
 sleep 5
 xterm  -e  " export TURTLEBOT3_MODEL=burger && roslaunch turtlebot3_navigation turtlebot3_navigation.launch" &
 sleep 5
-xterm  -e  " rosrun add_markers add_markers_node" &
+xterm  -e  " rosrun add_markers home_service_node" &
 sleep 5
 xterm  -e  " rosrun pick_objects pick_objects_node"
